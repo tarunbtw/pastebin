@@ -687,7 +687,7 @@
           });
           const data = await res.json();
           if (data.url) {
-            window.location.href = data.url;
+            window.location.href = data.url + "?new=1";
           } else {
             alert("something went wrong");
             btn.disabled = false;

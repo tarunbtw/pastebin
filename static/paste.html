@@ -9,10 +9,19 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
       :root {
         --bg: #0f0f0f;
@@ -27,7 +36,10 @@
         --accent-fg: #0f0f0f;
       }
 
-      html, body { height: 100%; }
+      html,
+      body {
+        height: 100%;
+      }
 
       body {
         background: var(--bg);
@@ -65,9 +77,15 @@
         text-decoration: none;
       }
 
-      .logo span { color: var(--text-dim); }
+      .logo span {
+        color: var(--text-dim);
+      }
 
-      .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
       .btn-sm {
         background: transparent;
@@ -84,7 +102,10 @@
         align-items: center;
       }
 
-      .btn-sm:hover { border-color: var(--border-focus); color: var(--text); }
+      .btn-sm:hover {
+        border-color: var(--border-focus);
+        color: var(--text);
+      }
 
       /* main */
       main {
@@ -111,7 +132,11 @@
         gap: 0.5rem;
       }
 
-      .meta-left { display: flex; align-items: center; gap: 0.5rem; }
+      .meta-left {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
       .lang-tag {
         font-family: "JetBrains Mono", monospace;
@@ -149,10 +174,22 @@
         padding: 0 1rem;
       }
 
-      .code-bar-left { display: flex; align-items: center; gap: 0.75rem; }
+      .code-bar-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
 
-      .dots { display: flex; gap: 5px; }
-      .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--border);
+      }
 
       .paste-id {
         font-family: "JetBrains Mono", monospace;
@@ -172,9 +209,14 @@
         transition: all 0.15s;
       }
 
-      .btn-copy-url:hover { border-color: var(--border-focus); color: var(--text-dim); }
+      .btn-copy-url:hover {
+        border-color: var(--border-focus);
+        color: var(--text-dim);
+      }
 
-      .code-body { display: flex; }
+      .code-body {
+        display: flex;
+      }
 
       .gutter {
         padding: 1rem 0.75rem;
@@ -220,9 +262,22 @@
         width: 100%;
       }
 
-      .gone-icon { font-size: 1.8rem; margin-bottom: 1rem; opacity: 0.4; }
-      .gone-title { font-size: 0.95rem; color: var(--text); margin-bottom: 0.4rem; }
-      .gone-sub { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 1.5rem; }
+      .gone-icon {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        opacity: 0.4;
+      }
+      .gone-title {
+        font-size: 0.95rem;
+        color: var(--text);
+        margin-bottom: 0.4rem;
+      }
+      .gone-sub {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+      }
 
       .pw-row {
         display: flex;
@@ -243,7 +298,9 @@
         transition: border-color 0.15s;
       }
 
-      .pw-input:focus { border-color: var(--border-focus); }
+      .pw-input:focus {
+        border-color: var(--border-focus);
+      }
 
       .pw-btn {
         background: var(--accent);
@@ -257,7 +314,9 @@
         transition: opacity 0.15s;
       }
 
-      .pw-btn:hover { opacity: 0.85; }
+      .pw-btn:hover {
+        opacity: 0.85;
+      }
 
       .pw-error {
         font-family: "JetBrains Mono", monospace;
@@ -280,7 +339,9 @@
         transition: opacity 0.15s;
       }
 
-      .btn-new:hover { opacity: 0.8; }
+      .btn-new:hover {
+        opacity: 0.8;
+      }
 
       /* footer */
       footer {
@@ -306,8 +367,13 @@
         color: var(--text-muted);
       }
 
-      .footer-text a { color: var(--text-dim); text-decoration: none; }
-      .footer-text a:hover { color: var(--text); }
+      .footer-text a {
+        color: var(--text-dim);
+        text-decoration: none;
+      }
+      .footer-text a:hover {
+        color: var(--text);
+      }
 
       /* toast */
       .toast {
@@ -326,16 +392,31 @@
         pointer-events: none;
       }
 
-      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-      @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(8px); }
-        to   { opacity: 1; transform: translateY(0); }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
       }
 
-      .inner > * { animation: fadeUp 0.3s ease both; }
-      .inner > *:nth-child(1) { animation-delay: 0.03s; }
-      .inner > *:nth-child(2) { animation-delay: 0.08s; }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .inner > * {
+        animation: fadeUp 0.3s ease both;
+      }
+      .inner > *:nth-child(1) {
+        animation-delay: 0.03s;
+      }
+      .inner > *:nth-child(2) {
+        animation-delay: 0.08s;
+      }
     </style>
   </head>
   <body>
@@ -358,7 +439,9 @@
       <div class="footer-inner">
         <div class="footer-text">
           built in go ·
-          <a href="https://github.com/tarunbtw/pastebin" target="_blank">github</a>
+          <a href="https://github.com/tarunbtw/pastebin" target="_blank"
+            >github</a
+          >
         </div>
         <div class="footer-text" id="footer-meta"></div>
       </div>
@@ -373,7 +456,10 @@
       let pasteContent = "";
 
       function escapeHtml(s) {
-        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return s
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
       }
 
       function showToast(msg) {
@@ -385,11 +471,15 @@
 
       function copyContent() {
         if (!pasteContent) return;
-        navigator.clipboard.writeText(pasteContent).then(() => showToast("copied to clipboard"));
+        navigator.clipboard
+          .writeText(pasteContent)
+          .then(() => showToast("copied to clipboard"));
       }
 
       function copyUrl() {
-        navigator.clipboard.writeText(window.location.href).then(() => showToast("link copied"));
+        navigator.clipboard
+          .writeText(window.location.href)
+          .then(() => showToast("link copied"));
       }
 
       function showPasswordPrompt(errorMsg) {
@@ -415,7 +505,7 @@
         if (!pw) return;
 
         const res = await fetch("/api/paste/" + id, {
-          headers: { "X-Paste-Password": pw }
+          headers: { "X-Paste-Password": pw },
         });
 
         if (res.status === 401) {
@@ -448,14 +538,20 @@
         document.title = "paste · " + id;
 
         const lines = d.content.split("\n");
-        const nums = Array.from({ length: lines.length }, (_, i) => i + 1).join("\n");
+        const nums = Array.from({ length: lines.length }, (_, i) => i + 1).join(
+          "\n",
+        );
 
         let expiryText = "never expires";
         if (d.expires_at) {
           const exp = new Date(d.expires_at);
-          expiryText = "expires " + exp.toLocaleDateString("en-US", {
-            month: "short", day: "numeric", year: "numeric"
-          });
+          expiryText =
+            "expires " +
+            exp.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
         }
 
         const views = d.view_limit
@@ -463,7 +559,9 @@
           : `${d.view_count} views`;
 
         const created = new Date(d.created_at).toLocaleDateString("en-US", {
-          month: "short", day: "numeric", year: "numeric"
+          month: "short",
+          day: "numeric",
+          year: "numeric",
         });
 
         const burnBadge = d.burn
@@ -512,7 +610,17 @@
 
       async function load() {
         try {
-          const res = await fetch("/api/paste/" + id);
+          // if creator's first visit, don't count as a view
+          const isNew =
+            new URLSearchParams(window.location.search).get("new") === "1";
+          if (isNew) {
+            // clean the URL without reloading
+            history.replaceState(null, "", window.location.pathname);
+          }
+
+          const res = await fetch(
+            "/api/paste/" + id + (isNew ? "?preview=1" : ""),
+          );
 
           if (res.status === 404 || res.status === 410) {
             showGone();
@@ -526,7 +634,6 @@
 
           const d = await res.json();
           renderPaste(d);
-
         } catch {
           inner.innerHTML = `<div style="padding:2rem;font-family:monospace;font-size:0.8rem;color:var(--text-dim)">failed to load paste.</div>`;
         }

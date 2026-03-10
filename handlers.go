@@ -110,7 +110,6 @@ func getPasteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// optional password from header
 	password := r.Header.Get("X-Paste-Password")
 
 	paste, err := getPaste(id)
@@ -139,7 +138,6 @@ func getPasteHandler(w http.ResponseWriter, r *http.Request) {
 	// check password
 	if paste.PasswordHash != "" {
 		if password == "" {
-			// tell client this paste is password protected
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusUnauthorized)
 			json.NewEncoder(w).Encode(map[string]interface{}{
@@ -149,7 +147,6 @@ func getPasteHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if err := bcrypt.CompareHashAndPassword([]byte(paste.PasswordHash), []byte(password)); err != nil {
-			// constant time to avoid timing attacks
 			_ = subtle.ConstantTimeCompare([]byte(password), []byte(password))
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusUnauthorized)
@@ -161,11 +158,14 @@ func getPasteHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	incrementViewCount(id)
+	// don't count view if creator is previewing
+	isPreview := r.URL.Query().Get("preview") == "1"
 
-	// if burn after read, delete after incrementing
-	if paste.ViewLimit != nil && *paste.ViewLimit == 1 && paste.Burn {
-		deletePaste(id)
+	if !isPreview {
+		incrementViewCount(id)
+		if paste.Burn {
+			defer deletePaste(id)
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
