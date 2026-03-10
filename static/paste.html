@@ -9,6 +9,11 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
       *,
       *::before,
@@ -102,26 +107,6 @@
         color: var(--text);
       }
 
-      .theme-btn {
-        background: transparent;
-        border: 1px solid var(--border);
-        color: var(--text-dim);
-        width: 30px;
-        height: 30px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.15s;
-      }
-
-      .theme-btn:hover {
-        border-color: var(--border-focus);
-        color: var(--text);
-      }
-
       /* main */
       main {
         padding: 2rem 4rem;
@@ -171,7 +156,7 @@
         gap: 1.5rem;
       }
 
-      /* code box — fits content, no stretching */
+      /* code box */
       .code-wrap {
         border: 1px solid var(--border);
         border-radius: 8px;
@@ -194,10 +179,12 @@
         align-items: center;
         gap: 0.75rem;
       }
+
       .dots {
         display: flex;
         gap: 5px;
       }
+
       .dot {
         width: 10px;
         height: 10px;
@@ -209,12 +196,6 @@
         font-family: "JetBrains Mono", monospace;
         font-size: 0.62rem;
         color: var(--text-muted);
-      }
-
-      .code-bar-right {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
       }
 
       .btn-copy-url {
@@ -252,16 +233,17 @@
         white-space: pre;
       }
 
+      /* override hljs background so our surface color shows */
       #paste-content {
         flex: 1;
         padding: 1rem 1.25rem;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 0.8rem;
-        line-height: 1.75;
-        color: var(--text);
-        white-space: pre-wrap;
+        font-family: "JetBrains Mono", monospace !important;
+        font-size: 0.8rem !important;
+        line-height: 1.75 !important;
+        white-space: pre-wrap !important;
         word-break: break-all;
         display: block;
+        background: transparent !important;
       }
 
       /* gone state */
@@ -287,11 +269,13 @@
         margin-bottom: 1rem;
         opacity: 0.4;
       }
+
       .gone-title {
         font-size: 0.95rem;
         color: var(--text);
         margin-bottom: 0.4rem;
       }
+
       .gone-sub {
         font-size: 0.8rem;
         color: var(--text-dim);
@@ -343,6 +327,7 @@
         color: var(--text-dim);
         text-decoration: none;
       }
+
       .footer-text a:hover {
         color: var(--text);
       }
@@ -460,14 +445,14 @@
 
           if (res.status === 404 || res.status === 410) {
             inner.innerHTML = `
-            <div class="gone">
-              <div class="gone-box">
-                <div class="gone-icon">⌫</div>
-                <div class="gone-title">paste not found</div>
-                <div class="gone-sub">this paste expired, hit its view limit, or never existed.</div>
-                <a href="/" class="btn-new">new paste →</a>
-              </div>
-            </div>`;
+              <div class="gone">
+                <div class="gone-box">
+                  <div class="gone-icon">⌫</div>
+                  <div class="gone-title">paste not found</div>
+                  <div class="gone-sub">this paste expired, hit its view limit, or never existed.</div>
+                  <a href="/" class="btn-new">new paste →</a>
+                </div>
+              </div>`;
             return;
           }
 
@@ -504,36 +489,43 @@
           });
 
           inner.innerHTML = `
-          <div class="meta">
-            <div class="meta-left">
-              <span class="lang-tag">${d.language}</span>
-            </div>
-            <div class="meta-right">
-              <span>${views}</span>
-              <span>${expiryText}</span>
-              <span>${created}</span>
-            </div>
-          </div>
-          <div class="code-wrap">
-            <div class="code-bar">
-              <div class="code-bar-left">
-                <div class="dots">
-                  <div class="dot"></div>
-                  <div class="dot"></div>
-                  <div class="dot"></div>
-                </div>
-                <div class="paste-id">${id}</div>
+            <div class="meta">
+              <div class="meta-left">
+                <span class="lang-tag">${d.language}</span>
               </div>
-              <button class="btn-copy-url" onclick="copyContent()">copy</button>
+              <div class="meta-right">
+                <span>${views}</span>
+                <span>${expiryText}</span>
+                <span>${created}</span>
+              </div>
             </div>
-            <div class="code-body">
-              <div class="gutter">${nums}</div>
-              <code id="paste-content">${escapeHtml(d.content)}</code>
-            </div>
-          </div>`;
+            <div class="code-wrap">
+              <div class="code-bar">
+                <div class="code-bar-left">
+                  <div class="dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                  </div>
+                  <div class="paste-id">${id}</div>
+                </div>
+                <button class="btn-copy-url" onclick="copyContent()">copy</button>
+              </div>
+              <div class="code-body">
+                <div class="gutter">${nums}</div>
+                <code id="paste-content">${escapeHtml(d.content)}</code>
+              </div>
+            </div>`;
 
           document.getElementById("footer-meta").textContent =
             `${lines.length} lines · ${d.content.length.toLocaleString()} chars`;
+
+          // syntax highlighting
+          const codeEl = document.getElementById("paste-content");
+          if (d.language && d.language !== "plaintext") {
+            codeEl.classList.add("language-" + d.language);
+            hljs.highlightElement(codeEl);
+          }
         } catch {
           inner.innerHTML = `<div style="padding:2rem;font-family:monospace;font-size:0.8rem;color:var(--text-dim)">failed to load paste.</div>`;
         }
