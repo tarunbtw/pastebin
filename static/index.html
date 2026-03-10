@@ -1,459 +1,728 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="dark">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>pastebin — share code & text</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #0f0f0f;
-      --surface: #171717;
-      --surface2: #1e1e1e;
-      --border: #282828;
-      --border-focus: #444;
-      --text: #e8e8e8;
-      --text-dim: #666;
-      --text-muted: #333;
-      --accent: #e8e8e8;
-      --accent-fg: #0f0f0f;
-    }
-
-    [data-theme="light"] {
-      --bg: #f5f5f4;
-      --surface: #ffffff;
-      --surface2: #f0f0ef;
-      --border: #e0e0de;
-      --border-focus: #aaa;
-      --text: #1a1a1a;
-      --text-dim: #777;
-      --text-muted: #ccc;
-      --accent: #1a1a1a;
-      --accent-fg: #ffffff;
-    }
-
-    html, body { height: 100%; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ── HEADER ── */
-    header {
-      height: 56px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      padding: 0 4rem;
-    }
-
-    .header-inner {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.88rem;
-      font-weight: 500;
-      color: var(--text);
-      text-decoration: none;
-      letter-spacing: -0.3px;
-    }
-
-    .logo span { color: var(--text-dim); }
-
-    .theme-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      width: 30px; height: 30px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.75rem;
-      transition: all 0.15s;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .theme-btn:hover { border-color: var(--border-focus); color: var(--text); }
-
-    /* ── MAIN ── */
-    main {
-      flex: 1;
-      padding: 2.5rem 4rem;
-    }
-
-    .inner {
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .page-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-    }
-
-    /* ── EDITOR ── */
-    .editor {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      background: var(--surface);
-      transition: border-color 0.2s;
-    }
-
-    .editor:focus-within { border-color: var(--border-focus); }
-
-    .editor-bar {
-      height: 38px;
-      background: var(--surface2);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 1rem;
-    }
-
-    .dots { display: flex; gap: 5px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
-
-    .editor-meta {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem;
-      color: var(--text-muted);
-    }
-
-    .editor-body { display: flex; min-height: 400px; }
-
-    .gutter {
-      padding: 1rem 0.75rem;
-      background: var(--surface2);
-      border-right: 1px solid var(--border);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      line-height: 1.75;
-      color: var(--text-muted);
-      text-align: right;
-      user-select: none;
-      min-width: 44px;
-      white-space: pre;
-    }
-
-    #content {
-      flex: 1;
-      padding: 1rem 1.25rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      line-height: 1.75;
-      color: var(--text);
-      background: transparent;
-      border: none;
-      resize: none;
-      outline: none;
-      tab-size: 2;
-    }
-
-    #content::placeholder { color: var(--text-muted); }
-
-    /* ── OPTIONS ── */
-    .options {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      flex: 1;
-      min-width: 150px;
-    }
-
-    .field label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem;
-      color: var(--text-dim);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .field select,
-    .field input {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.55rem 0.85rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.15s;
-      appearance: none;
-      width: 100%;
-    }
-
-    .field select:focus,
-    .field input:focus { border-color: var(--border-focus); }
-    .field input::placeholder { color: var(--text-muted); }
-
-    /* ── SUBMIT ── */
-    .submit-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .stats {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      display: flex;
-      gap: 1.2rem;
-    }
-
-    .btn-create {
-      background: var(--accent);
-      color: var(--accent-fg);
-      border: none;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      font-weight: 500;
-      padding: 0.65rem 1.6rem;
-      border-radius: 6px;
-      cursor: pointer;
-      letter-spacing: 0.3px;
-      transition: all 0.15s;
-    }
-
-    .btn-create:hover { opacity: 0.85; transform: translateY(-1px); }
-    .btn-create:active { transform: translateY(0); }
-    .btn-create:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
-
-    /* ── FOOTER ── */
-    footer {
-      height: 48px;
-      border-top: 1px solid var(--border);
-      padding: 0 4rem;
-      display: flex;
-      align-items: center;
-    }
-
-    .footer-inner {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .footer-text {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem;
-      color: var(--text-muted);
-    }
-
-    .footer-text a { color: var(--text-dim); text-decoration: none; }
-    .footer-text a:hover { color: var(--text); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .inner > * { animation: fadeUp 0.3s ease both; }
-    .inner > *:nth-child(1) { animation-delay: 0.03s; }
-    .inner > *:nth-child(2) { animation-delay: 0.07s; }
-    .inner > *:nth-child(3) { animation-delay: 0.11s; }
-    .inner > *:nth-child(4) { animation-delay: 0.15s; }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="header-inner">
-      <a href="/" class="logo">paste<span>bin</span></a>
-      <button class="theme-btn" id="theme-btn" title="toggle theme">☀</button>
-    </div>
-  </header>
-
-  <main>
-    <div class="inner">
-      <div class="page-label">// new paste</div>
-
-      <div class="editor">
-        <div class="editor-bar">
-          <div class="dots">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-          </div>
-          <div class="editor-meta" id="editor-meta">0 lines</div>
-        </div>
-        <div class="editor-body">
-          <div class="gutter" id="gutter">1</div>
-          <textarea id="content" placeholder="paste your code or text here..." spellcheck="false" autocomplete="off"></textarea>
-        </div>
-      </div>
-
-      <div class="options">
-        <div class="field">
-          <label>Language</label>
-          <select id="language">
-            <option value="plaintext">plaintext</option>
-            <option value="javascript">javascript</option>
-            <option value="typescript">typescript</option>
-            <option value="python">python</option>
-            <option value="go">go</option>
-            <option value="rust">rust</option>
-            <option value="c">c</option>
-            <option value="cpp">c++</option>
-            <option value="java">java</option>
-            <option value="bash">bash</option>
-            <option value="sql">sql</option>
-            <option value="json">json</option>
-            <option value="html">html</option>
-            <option value="css">css</option>
-            <option value="yaml">yaml</option>
-            <option value="markdown">markdown</option>
-            <option value="dockerfile">dockerfile</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Expiry</label>
-          <select id="expires_in">
-            <option value="never">never</option>
-            <option value="1h">1 hour</option>
-            <option value="24h">24 hours</option>
-            <option value="7d">7 days</option>
-            <option value="30d">30 days</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>View Limit</label>
-          <input type="number" id="view_limit" placeholder="unlimited" min="1"/>
-        </div>
-      </div>
-
-      <div class="submit-row">
-        <div class="stats">
-          <span id="char-count">0 chars</span>
-          <span id="line-count">0 lines</span>
-        </div>
-        <button class="btn-create" id="btn" onclick="createPaste()">create paste →</button>
-      </div>
-    </div>
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-text">built in go · <a href="https://github.com/tarunbtw/pastebin" target="_blank">github</a></div>
-      <div class="footer-text">ctrl+enter to submit</div>
-    </div>
-  </footer>
-
-  <script>
-    // theme
-    const root = document.documentElement;
-    const themeBtn = document.getElementById('theme-btn');
-    const saved = localStorage.getItem('theme') || 'dark';
-    root.setAttribute('data-theme', saved);
-    themeBtn.textContent = saved === 'dark' ? '☀' : '☾';
-
-    themeBtn.addEventListener('click', () => {
-      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      themeBtn.textContent = next === 'dark' ? '☀' : '☾';
-    });
-
-    // editor
-    const content = document.getElementById('content');
-    const gutter = document.getElementById('gutter');
-    const editorMeta = document.getElementById('editor-meta');
-    const charCount = document.getElementById('char-count');
-    const lineCount = document.getElementById('line-count');
-
-    function update() {
-      const lines = content.value.split('\n');
-      const n = lines.length;
-      gutter.textContent = Array.from({length: n}, (_, i) => i + 1).join('\n');
-      editorMeta.textContent = n + ' lines';
-      charCount.textContent = content.value.length.toLocaleString() + ' chars';
-      lineCount.textContent = n + ' lines';
-    }
-
-    content.addEventListener('input', update);
-    content.addEventListener('scroll', () => { gutter.scrollTop = content.scrollTop; });
-
-    content.addEventListener('keydown', e => {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const s = content.selectionStart;
-        content.value = content.value.substring(0, s) + '  ' + content.value.substring(content.selectionEnd);
-        content.selectionStart = content.selectionEnd = s + 2;
-        update();
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pastebin — share code & text</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-      if (e.ctrlKey && e.key === 'Enter') createPaste();
-    });
 
-    async function createPaste() {
-      const btn = document.getElementById('btn');
-      const text = content.value.trim();
-      if (!text) { content.focus(); return; }
+      :root {
+        --bg: #0f0f0f;
+        --surface: #1c1c1c;
+        --surface2: #252525;
+        --border: #3a3a3a;
+        --border-focus: #707070;
+        --text: #ffffff;
+        --text-dim: #aaaaaa;
+        --text-muted: #666666;
+        --accent: #ffffff;
+        --accent-fg: #0f0f0f;
+        --dropdown-bg: #252525;
+        --dropdown-hover: #2f2f2f;
+      }
 
-      btn.disabled = true;
-      btn.textContent = 'creating...';
+      [data-theme="light"] {
+        --bg: #f5f5f4;
+        --surface: #ffffff;
+        --surface2: #f0f0ef;
+        --border: #e0e0de;
+        --border-focus: #aaa;
+        --text: #1a1a1a;
+        --text-dim: #777;
+        --text-muted: #bbb;
+        --accent: #1a1a1a;
+        --accent-fg: #ffffff;
+        --dropdown-bg: #ffffff;
+        --dropdown-hover: #f5f5f4;
+      }
 
-      const vl = document.getElementById('view_limit').value;
-      const body = {
-        content: text,
-        language: document.getElementById('language').value,
-        expires_in: document.getElementById('expires_in').value,
-      };
-      if (vl) body.view_limit = parseInt(vl);
+      html,
+      body {
+        height: 100%;
+      }
 
-      try {
-        const res = await fetch('/api/paste', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          alert('something went wrong');
-          btn.disabled = false;
-          btn.textContent = 'create paste →';
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        height: 56px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 4rem;
+      }
+
+      .header-inner {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .logo {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      .logo span {
+        color: var(--text-dim);
+      }
+
+      .theme-btn {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+      }
+
+      .theme-btn:hover {
+        border-color: var(--border-focus);
+        color: var(--text);
+      }
+
+      main {
+        flex: 1;
+        padding: 2.5rem 4rem;
+      }
+
+      .inner {
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .page-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        letter-spacing: 1px;
+      }
+
+      /* editor */
+      .editor {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--surface);
+        transition: border-color 0.2s;
+      }
+
+      .editor:focus-within {
+        border-color: var(--border-focus);
+      }
+
+      .editor-bar {
+        height: 38px;
+        background: var(--surface2);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+      }
+
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--border);
+      }
+
+      .editor-meta {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.62rem;
+        color: var(--text-muted);
+      }
+
+      .editor-body {
+        display: flex;
+        min-height: 400px;
+      }
+
+      .gutter {
+        padding: 1rem 0.75rem;
+        background: var(--surface2);
+        border-right: 1px solid var(--border);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        line-height: 1.75;
+        color: var(--text-muted);
+        text-align: right;
+        user-select: none;
+        min-width: 44px;
+        white-space: pre;
+        overflow: hidden;
+      }
+
+      #content {
+        flex: 1;
+        padding: 1rem 1.25rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        line-height: 1.75;
+        color: var(--text);
+        background: transparent;
+        border: none;
+        resize: none;
+        outline: none;
+        tab-size: 2;
+      }
+
+      #content::placeholder {
+        color: var(--text-muted);
+      }
+
+      /* options */
+      .options {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 50;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        flex: 1;
+        min-width: 150px;
+        position: relative;
+      }
+
+      .field label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.62rem;
+        color: var(--text-dim);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* custom dropdown */
+      .custom-select {
+        position: relative;
+      }
+
+      .select-trigger {
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.55rem 2rem 0.55rem 0.85rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--text);
+        cursor: pointer;
+        transition: border-color 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        user-select: none;
+      }
+
+      .select-trigger:hover,
+      .select-trigger.open {
+        border-color: var(--border-focus);
+      }
+
+      .select-arrow {
+        font-size: 0.6rem;
+        color: var(--text-muted);
+        transition: transform 0.15s;
+        flex-shrink: 0;
+      }
+
+      .select-trigger.open .select-arrow {
+        transform: rotate(180deg);
+      }
+
+      .select-dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: var(--dropdown-bg);
+        border: 1px solid var(--border-focus);
+        border-radius: 6px;
+        z-index: 9999;
+        max-height: 220px;
+        overflow-y: auto;
+        display: none;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      }
+
+      .select-dropdown.open {
+        display: block;
+      }
+
+      .select-option {
+        padding: 0.5rem 0.85rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        transition: all 0.1s;
+      }
+
+      .select-option:hover {
+        background: var(--dropdown-hover);
+        color: var(--text);
+      }
+      .select-option.selected {
+        color: var(--text);
+        background: var(--dropdown-hover);
+      }
+
+      /* number input */
+      .field input {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.55rem 0.85rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.15s;
+        width: 100%;
+        appearance: none;
+      }
+
+      .field input:focus {
+        border-color: var(--border-focus);
+      }
+      .field input::placeholder {
+        color: var(--text-muted);
+      }
+
+      /* submit */
+      .submit-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 1;
+      }
+
+      .stats {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        display: flex;
+        gap: 1.2rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .btn-create {
+        background: var(--accent);
+        color: var(--accent-fg);
+        border: none;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        font-weight: 500;
+        padding: 0.65rem 1.6rem;
+        border-radius: 6px;
+        cursor: pointer;
+        letter-spacing: 0.3px;
+        transition: all 0.15s;
+      }
+
+      .btn-create:hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+      }
+      .btn-create:active {
+        transform: translateY(0);
+      }
+      .btn-create:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      footer {
+        height: 48px;
+        border-top: 1px solid var(--border);
+        padding: 0 4rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .footer-inner {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .footer-text {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.62rem;
+        color: var(--text-muted);
+      }
+
+      .footer-text a {
+        color: var(--text-dim);
+        text-decoration: none;
+      }
+      .footer-text a:hover {
+        color: var(--text);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
         }
-      } catch {
-        alert('failed to create paste');
-        btn.disabled = false;
-        btn.textContent = 'create paste →';
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
-    }
 
-    update();
-  </script>
-</body>
+      .inner > * {
+        animation: fadeUp 0.3s ease both;
+      }
+      .inner > *:nth-child(1) {
+        animation-delay: 0.03s;
+      }
+      .inner > *:nth-child(2) {
+        animation-delay: 0.07s;
+      }
+      .inner > *:nth-child(3) {
+        animation-delay: 0.11s;
+      }
+      .inner > *:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <a href="/" class="logo">paste<span>bin</span></a>
+        <button class="theme-btn" id="theme-btn">☀</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="inner">
+        <div class="page-label">// new paste</div>
+
+        <div class="editor">
+          <div class="editor-bar">
+            <div class="dots">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+            <div class="editor-meta" id="editor-meta">0 lines</div>
+          </div>
+          <div class="editor-body">
+            <div class="gutter" id="gutter">1</div>
+            <textarea
+              id="content"
+              placeholder="paste your code or text here..."
+              spellcheck="false"
+              autocomplete="off"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="options">
+          <!-- language -->
+          <div class="field">
+            <label>Language</label>
+            <div class="custom-select" id="sel-language">
+              <div class="select-trigger" onclick="toggleDropdown('language')">
+                <span class="select-value">plaintext</span>
+                <span class="select-arrow">▼</span>
+              </div>
+              <div class="select-dropdown" id="dd-language">
+                <div class="select-option selected" data-value="plaintext">
+                  plaintext
+                </div>
+                <div class="select-option" data-value="javascript">
+                  javascript
+                </div>
+                <div class="select-option" data-value="typescript">
+                  typescript
+                </div>
+                <div class="select-option" data-value="python">python</div>
+                <div class="select-option" data-value="go">go</div>
+                <div class="select-option" data-value="rust">rust</div>
+                <div class="select-option" data-value="c">c</div>
+                <div class="select-option" data-value="cpp">c++</div>
+                <div class="select-option" data-value="java">java</div>
+                <div class="select-option" data-value="bash">bash</div>
+                <div class="select-option" data-value="sql">sql</div>
+                <div class="select-option" data-value="json">json</div>
+                <div class="select-option" data-value="html">html</div>
+                <div class="select-option" data-value="css">css</div>
+                <div class="select-option" data-value="yaml">yaml</div>
+                <div class="select-option" data-value="markdown">markdown</div>
+                <div class="select-option" data-value="dockerfile">
+                  dockerfile
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- expiry -->
+          <div class="field">
+            <label>Expiry</label>
+            <div class="custom-select" id="sel-expiry">
+              <div class="select-trigger" onclick="toggleDropdown('expiry')">
+                <span class="select-value">never</span>
+                <span class="select-arrow">▼</span>
+              </div>
+              <div class="select-dropdown" id="dd-expiry">
+                <div class="select-option selected" data-value="never">
+                  never
+                </div>
+                <div class="select-option" data-value="1h">1 hour</div>
+                <div class="select-option" data-value="24h">24 hours</div>
+                <div class="select-option" data-value="7d">7 days</div>
+                <div class="select-option" data-value="30d">30 days</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- view limit -->
+          <div class="field">
+            <label>View Limit</label>
+            <input
+              type="number"
+              id="view_limit"
+              placeholder="unlimited"
+              min="1"
+            />
+          </div>
+        </div>
+
+        <div class="submit-row">
+          <div class="stats">
+            <span id="char-count">0 chars</span>
+            <span id="line-count">0 lines</span>
+          </div>
+          <button class="btn-create" id="btn" onclick="createPaste()">
+            create paste →
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-text">
+          built in go ·
+          <a href="https://github.com/tarunbtw/pastebin" target="_blank"
+            >github</a
+          >
+        </div>
+        <div class="footer-text">ctrl+enter to submit</div>
+      </div>
+    </footer>
+
+    <script>
+      // theme
+      const root = document.documentElement;
+      const themeBtn = document.getElementById("theme-btn");
+      const saved = localStorage.getItem("theme") || "dark";
+      root.setAttribute("data-theme", saved);
+      themeBtn.textContent = saved === "dark" ? "☀" : "☾";
+
+      themeBtn.addEventListener("click", () => {
+        const next =
+          root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        themeBtn.textContent = next === "dark" ? "☀" : "☾";
+      });
+
+      // custom dropdowns
+      const dropdownValues = { language: "plaintext", expiry: "never" };
+
+      function toggleDropdown(name) {
+        const trigger = document.querySelector(
+          `#sel-${name === "language" ? "language" : "expiry"} .select-trigger`,
+        );
+        const dd = document.getElementById(
+          `dd-${name === "language" ? "language" : "expiry"}`,
+        );
+        const isOpen = dd.classList.contains("open");
+
+        // close all
+        document
+          .querySelectorAll(".select-dropdown")
+          .forEach((d) => d.classList.remove("open"));
+        document
+          .querySelectorAll(".select-trigger")
+          .forEach((t) => t.classList.remove("open"));
+
+        if (!isOpen) {
+          dd.classList.add("open");
+          trigger.classList.add("open");
+        }
+      }
+
+      // wire up options
+      document.querySelectorAll(".select-option").forEach((opt) => {
+        opt.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const dd = opt.closest(".select-dropdown");
+          const trigger = dd.previousElementSibling;
+          const container = opt.closest(".custom-select");
+
+          // figure out which dropdown
+          const name = dd.id === "dd-language" ? "language" : "expiry";
+          dropdownValues[name] = opt.dataset.value;
+
+          // update display
+          trigger.querySelector(".select-value").textContent = opt.textContent;
+
+          // mark selected
+          dd.querySelectorAll(".select-option").forEach((o) =>
+            o.classList.remove("selected"),
+          );
+          opt.classList.add("selected");
+
+          // close
+          dd.classList.remove("open");
+          trigger.classList.remove("open");
+        });
+      });
+
+      // close on outside click
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".custom-select")) {
+          document
+            .querySelectorAll(".select-dropdown")
+            .forEach((d) => d.classList.remove("open"));
+          document
+            .querySelectorAll(".select-trigger")
+            .forEach((t) => t.classList.remove("open"));
+        }
+      });
+
+      // editor
+      const content = document.getElementById("content");
+      const gutter = document.getElementById("gutter");
+      const editorMeta = document.getElementById("editor-meta");
+      const charCount = document.getElementById("char-count");
+      const lineCount = document.getElementById("line-count");
+
+      function update() {
+        const lines = content.value.split("\n");
+        const n = lines.length;
+        gutter.textContent = Array.from({ length: n }, (_, i) => i + 1).join(
+          "\n",
+        );
+        editorMeta.textContent = n + " lines";
+        charCount.textContent =
+          content.value.length.toLocaleString() + " chars";
+        lineCount.textContent = n + " lines";
+      }
+
+      content.addEventListener("input", update);
+      content.addEventListener("scroll", () => {
+        gutter.scrollTop = content.scrollTop;
+      });
+
+      content.addEventListener("keydown", (e) => {
+        if (e.key === "Tab") {
+          e.preventDefault();
+          const s = content.selectionStart;
+          content.value =
+            content.value.substring(0, s) +
+            "  " +
+            content.value.substring(content.selectionEnd);
+          content.selectionStart = content.selectionEnd = s + 2;
+          update();
+        }
+        if (e.ctrlKey && e.key === "Enter") createPaste();
+      });
+
+      async function createPaste() {
+        const btn = document.getElementById("btn");
+        const text = content.value.trim();
+        if (!text) {
+          content.focus();
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "creating...";
+
+        const vl = document.getElementById("view_limit").value;
+        const body = {
+          content: text,
+          language: dropdownValues.language,
+          expires_in: dropdownValues.expiry,
+        };
+        if (vl) body.view_limit = parseInt(vl);
+
+        try {
+          const res = await fetch("/api/paste", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          const data = await res.json();
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            alert("something went wrong");
+            btn.disabled = false;
+            btn.textContent = "create paste →";
+          }
+        } catch {
+          alert("failed to create paste");
+          btn.disabled = false;
+          btn.textContent = "create paste →";
+        }
+      }
+
+      update();
+    </script>
+  </body>
 </html>
