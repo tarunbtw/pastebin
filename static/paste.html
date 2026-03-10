@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>pastebin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9f9f8;
+      --surface: #ffffff;
+      --border: #e5e5e3;
+      --border-focus: #c0c0bc;
+      --text: #1a1a1a;
+      --text-dim: #888;
+      --text-muted: #bbb;
+      --accent: #1a1a1a;
+      --green: #16a34a;
+      --red: #dc2626;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 1.5rem;
+    }
+
+    .wrap { width: 100%; max-width: 720px; }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2rem 0 2.5rem;
+    }
+
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text);
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--text-muted); }
+
+    .nav-actions { display: flex; gap: 0.5rem; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .btn-ghost:hover { border-color: var(--border-focus); color: var(--text); }
+
+    /* meta bar */
+    .meta-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .meta-left { display: flex; align-items: center; gap: 0.5rem; }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      background: #f0f0ee;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+    }
+
+    .meta-right {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 1rem;
+    }
+
+    /* paste content */
+    .paste-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .paste-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .toolbar-dots { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+
+    #paste-content {
+      display: block;
+      width: 100%;
+      padding: 1.2rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-all;
+      min-height: 200px;
+    }
+
+    /* expired state */
+    .expired-box {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .expired-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .expired-title {
+      font-size: 1.1rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .expired-sub {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+    }
+
+    .btn-new {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .btn-new:hover { background: #333; }
+
+    /* toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--text);
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 999px;
+      opacity: 0;
+      transition: all 0.2s;
+      pointer-events: none;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    footer {
+      padding: 2.5rem 0 2rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    nav        { animation: fadeUp 0.4s ease both; }
+    .meta-bar  { animation: fadeUp 0.4s 0.05s ease both; }
+    .paste-wrap{ animation: fadeUp 0.4s 0.1s ease both; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="/" class="nav-logo">paste<span>bin</span></a>
+      <div class="nav-actions">
+        <button class="btn-ghost" onclick="copyContent()">copy</button>
+        <a class="btn-ghost" id="raw-link" href="#" target="_blank">raw</a>
+        <a class="btn-ghost" href="/">new paste</a>
+      </div>
+    </nav>
+
+    <div id="main-content">
+      <div class="meta-bar">
+        <div class="meta-left">
+          <span class="tag" id="lang-tag">plaintext</span>
+        </div>
+        <div class="meta-right">
+          <span id="meta-views">0 views</span>
+          <span id="meta-expires"></span>
+          <span id="meta-created"></span>
+        </div>
+      </div>
+
+      <div class="paste-wrap">
+        <div class="paste-toolbar">
+          <div class="toolbar-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+        <code id="paste-content">loading...</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">copied to clipboard</div>
+
+  <footer>
+    built in go &mdash; <a href="https://github.com/tarunbtw/pastebin" target="_blank">source</a>
+  </footer>
+
+  <script>
+    const id = window.location.pathname.replace('/p/', '');
+
+    document.getElementById('raw-link').href = '/raw/' + id;
+
+    async function load() {
+      try {
+        const res = await fetch('/api/paste/' + id);
+
+        if (res.status === 404 || res.status === 410) {
+          document.getElementById('main-content').innerHTML = `
+            <div class="expired-box">
+              <div class="expired-icon">🗑️</div>
+              <div class="expired-title">this paste is gone</div>
+              <div class="expired-sub">it either expired or reached its view limit.</div>
+              <a href="/" class="btn-new">create new paste →</a>
+            </div>`;
+          return;
+        }
+
+        const data = await res.json();
+
+        document.title = 'paste / ' + id;
+        document.getElementById('paste-content').textContent = data.content;
+        document.getElementById('lang-tag').textContent = data.language;
+        document.getElementById('meta-views').textContent = (data.view_count + 1) + ' views';
+
+        if (data.expires_at) {
+          const exp = new Date(data.expires_at);
+          document.getElementById('meta-expires').textContent = 'expires ' + exp.toLocaleDateString();
+        }
+
+        const created = new Date(data.created_at);
+        document.getElementById('meta-created').textContent = created.toLocaleDateString();
+
+      } catch {
+        document.getElementById('paste-content').textContent = 'failed to load paste.';
+      }
+    }
+
+    function copyContent() {
+      const text = document.getElementById('paste-content').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      });
+    }
+
+    load();
+  </script>
+</body>
+</html>

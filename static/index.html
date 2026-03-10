@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>pastebin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9f9f8;
+      --surface: #ffffff;
+      --border: #e5e5e3;
+      --border-focus: #c0c0bc;
+      --text: #1a1a1a;
+      --text-dim: #888;
+      --text-muted: #bbb;
+      --accent: #1a1a1a;
+      --tag-bg: #f0f0ee;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 1.5rem;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 720px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2rem 0 2.5rem;
+    }
+
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text);
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--text-muted); }
+
+    .nav-hint {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* editor area */
+    .editor-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .editor-wrap:focus-within {
+      border-color: var(--border-focus);
+    }
+
+    .editor-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+
+    .editor-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-left: 0.5rem;
+    }
+
+    #content {
+      width: 100%;
+      min-height: 340px;
+      padding: 1.2rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--surface);
+      border: none;
+      resize: vertical;
+      outline: none;
+    }
+
+    #content::placeholder { color: var(--text-muted); }
+
+    /* options row */
+    .options {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .select-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .select-wrap select {
+      width: 100%;
+      appearance: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 2rem 0.7rem 1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .select-wrap select:focus { border-color: var(--border-focus); }
+
+    .select-wrap::after {
+      content: '↓';
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .view-limit-wrap {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .view-limit-wrap input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .view-limit-wrap input:focus { border-color: var(--border-focus); }
+    .view-limit-wrap input::placeholder { color: var(--text-muted); }
+
+    /* submit row */
+    .submit-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .btn-create {
+      flex: 1;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.82rem;
+      padding: 0.85rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: all 0.15s;
+    }
+
+    .btn-create:hover { background: #333; transform: translateY(-1px); }
+    .btn-create:active { transform: translateY(0); }
+    .btn-create:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .char-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* footer */
+    footer {
+      padding: 2.5rem 0 2rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    nav          { animation: fadeUp 0.4s ease both; }
+    .editor-wrap { animation: fadeUp 0.4s 0.05s ease both; }
+    .options     { animation: fadeUp 0.4s 0.1s ease both; }
+    .submit-row  { animation: fadeUp 0.4s 0.15s ease both; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="/" class="nav-logo">paste<span>bin</span></a>
+      <div class="nav-hint">press ctrl+enter to submit</div>
+    </nav>
+
+    <div class="editor-wrap">
+      <div class="editor-toolbar">
+        <div class="toolbar-left">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <span class="editor-label">new paste</span>
+        </div>
+      </div>
+      <textarea id="content" placeholder="paste your code or text here..."></textarea>
+    </div>
+
+    <div class="options">
+      <div class="select-wrap">
+        <select id="language">
+          <option value="plaintext">plaintext</option>
+          <option value="javascript">javascript</option>
+          <option value="typescript">typescript</option>
+          <option value="python">python</option>
+          <option value="go">go</option>
+          <option value="rust">rust</option>
+          <option value="bash">bash</option>
+          <option value="sql">sql</option>
+          <option value="json">json</option>
+          <option value="html">html</option>
+          <option value="css">css</option>
+          <option value="yaml">yaml</option>
+          <option value="markdown">markdown</option>
+        </select>
+      </div>
+
+      <div class="select-wrap">
+        <select id="expires_in">
+          <option value="never">never expires</option>
+          <option value="1h">1 hour</option>
+          <option value="24h">24 hours</option>
+          <option value="7d">7 days</option>
+          <option value="30d">30 days</option>
+        </select>
+      </div>
+
+      <div class="view-limit-wrap">
+        <input type="number" id="view_limit" placeholder="view limit (optional)" min="1"/>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <button class="btn-create" id="btn" onclick="createPaste()">create paste →</button>
+      <span class="char-count" id="char-count">0 chars</span>
+    </div>
+
+    <footer>
+      built in go &mdash; <a href="https://github.com/tarunbtw/pastebin" target="_blank">source</a>
+    </footer>
+  </div>
+
+  <script>
+    const content = document.getElementById('content');
+    const charCount = document.getElementById('char-count');
+
+    content.addEventListener('input', () => {
+      const len = content.value.length;
+      charCount.textContent = len.toLocaleString() + ' chars';
+    });
+
+    content.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'Enter') createPaste();
+    });
+
+    async function createPaste() {
+      const btn = document.getElementById('btn');
+      const text = content.value.trim();
+
+      if (!text) {
+        content.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'creating...';
+
+      const viewLimit = document.getElementById('view_limit').value;
+
+      const body = {
+        content: text,
+        language: document.getElementById('language').value,
+        expires_in: document.getElementById('expires_in').value,
+      };
+
+      if (viewLimit) body.view_limit = parseInt(viewLimit);
+
+      try {
+        const res = await fetch('/api/paste', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const data = await res.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('something went wrong');
+          btn.disabled = false;
+          btn.textContent = 'create paste →';
+        }
+      } catch {
+        alert('failed to create paste');
+        btn.disabled = false;
+        btn.textContent = 'create paste →';
+      }
+    }
+  </script>
+</body>
+</html>
