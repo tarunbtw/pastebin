@@ -1,0 +1,11 @@
+cat > render.yaml << 'EOF'
+services:
+  - type: web
+    name: pastebin
+    runtime: go
+    buildCommand: go build -o pastebin .
+    startCommand: ./pastebin
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+EOF
