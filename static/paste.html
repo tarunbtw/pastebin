@@ -26,7 +26,7 @@
         --border-focus: #707070;
         --text: #ffffff;
         --text-dim: #aaaaaa;
-        --text-muted: #666666;
+        --text-muted: #777777;
         --accent: #ffffff;
         --accent-fg: #0f0f0f;
       }
@@ -409,7 +409,7 @@
       <div class="header-inner">
         <a href="/" class="logo">paste<span>bin</span></a>
         <div class="header-actions">
-          <button class="btn-sm" onclick="copyContent()">copy</button>
+          <button class="btn-sm" onclick="copyUrl()">copy bin</button>
           <a class="btn-sm" id="raw-link" href="#" target="_blank">raw</a>
           <a class="btn-sm" href="/">new paste</a>
           <button class="theme-btn" id="theme-btn">☀</button>
@@ -552,9 +552,7 @@
                 </div>
                 <div class="paste-id">${id}</div>
               </div>
-              <div class="code-bar-right">
-                <button class="btn-copy-url" onclick="copyUrl()">copy link</button>
-              </div>
+              <button class="btn-copy-url" onclick="copyContent()">copy</button>
             </div>
             <div class="code-body">
               <div class="gutter">${nums}</div>
