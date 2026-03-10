@@ -25,6 +25,10 @@ func main() {
 	mux.HandleFunc("/api/paste", createPasteHandler)
 	mux.HandleFunc("/api/paste/", getPasteHandler)
 	mux.HandleFunc("/raw/", getRawHandler)
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
+	})
 
 	port := os.Getenv("PORT")
 	if port == "" {

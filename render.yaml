@@ -5,6 +5,7 @@ services:
     runtime: go
     buildCommand: go build -o pastebin .
     startCommand: ./pastebin
+    healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
         sync: false
