@@ -9,19 +9,10 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
       :root {
         --bg: #0f0f0f;
@@ -36,10 +27,7 @@
         --accent-fg: #0f0f0f;
       }
 
-      html,
-      body {
-        height: 100%;
-      }
+      html, body { height: 100%; }
 
       body {
         background: var(--bg);
@@ -77,15 +65,9 @@
         text-decoration: none;
       }
 
-      .logo span {
-        color: var(--text-dim);
-      }
+      .logo span { color: var(--text-dim); }
 
-      .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
+      .header-actions { display: flex; align-items: center; gap: 0.5rem; }
 
       .btn-sm {
         background: transparent;
@@ -102,10 +84,7 @@
         align-items: center;
       }
 
-      .btn-sm:hover {
-        border-color: var(--border-focus);
-        color: var(--text);
-      }
+      .btn-sm:hover { border-color: var(--border-focus); color: var(--text); }
 
       /* main */
       main {
@@ -132,11 +111,7 @@
         gap: 0.5rem;
       }
 
-      .meta-left {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
+      .meta-left { display: flex; align-items: center; gap: 0.5rem; }
 
       .lang-tag {
         font-family: "JetBrains Mono", monospace;
@@ -174,23 +149,10 @@
         padding: 0 1rem;
       }
 
-      .code-bar-left {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
+      .code-bar-left { display: flex; align-items: center; gap: 0.75rem; }
 
-      .dots {
-        display: flex;
-        gap: 5px;
-      }
-
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--border);
-      }
+      .dots { display: flex; gap: 5px; }
+      .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
 
       .paste-id {
         font-family: "JetBrains Mono", monospace;
@@ -210,14 +172,9 @@
         transition: all 0.15s;
       }
 
-      .btn-copy-url:hover {
-        border-color: var(--border-focus);
-        color: var(--text-dim);
-      }
+      .btn-copy-url:hover { border-color: var(--border-focus); color: var(--text-dim); }
 
-      .code-body {
-        display: flex;
-      }
+      .code-body { display: flex; }
 
       .gutter {
         padding: 1rem 0.75rem;
@@ -233,7 +190,6 @@
         white-space: pre;
       }
 
-      /* override hljs background so our surface color shows */
       #paste-content {
         flex: 1;
         padding: 1rem 1.25rem;
@@ -246,7 +202,7 @@
         background: transparent !important;
       }
 
-      /* gone state */
+      /* gone / password state */
       .gone {
         display: flex;
         align-items: center;
@@ -260,27 +216,56 @@
         background: var(--surface);
         padding: 3rem 2.5rem;
         text-align: center;
-        max-width: 360px;
+        max-width: 380px;
         width: 100%;
       }
 
-      .gone-icon {
-        font-size: 1.8rem;
-        margin-bottom: 1rem;
-        opacity: 0.4;
+      .gone-icon { font-size: 1.8rem; margin-bottom: 1rem; opacity: 0.4; }
+      .gone-title { font-size: 0.95rem; color: var(--text); margin-bottom: 0.4rem; }
+      .gone-sub { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 1.5rem; }
+
+      .pw-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
       }
 
-      .gone-title {
-        font-size: 0.95rem;
+      .pw-input {
+        flex: 1;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
         color: var(--text);
-        margin-bottom: 0.4rem;
+        outline: none;
+        transition: border-color 0.15s;
       }
 
-      .gone-sub {
-        font-size: 0.8rem;
-        color: var(--text-dim);
-        line-height: 1.5;
-        margin-bottom: 1.5rem;
+      .pw-input:focus { border-color: var(--border-focus); }
+
+      .pw-btn {
+        background: var(--accent);
+        color: var(--accent-fg);
+        border: none;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: opacity 0.15s;
+      }
+
+      .pw-btn:hover { opacity: 0.85; }
+
+      .pw-error {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        color: #ff6b6b;
+        margin-top: 0.5rem;
+        min-height: 1rem;
+        text-align: left;
       }
 
       .btn-new {
@@ -295,9 +280,7 @@
         transition: opacity 0.15s;
       }
 
-      .btn-new:hover {
-        opacity: 0.8;
-      }
+      .btn-new:hover { opacity: 0.8; }
 
       /* footer */
       footer {
@@ -323,14 +306,8 @@
         color: var(--text-muted);
       }
 
-      .footer-text a {
-        color: var(--text-dim);
-        text-decoration: none;
-      }
-
-      .footer-text a:hover {
-        color: var(--text);
-      }
+      .footer-text a { color: var(--text-dim); text-decoration: none; }
+      .footer-text a:hover { color: var(--text); }
 
       /* toast */
       .toast {
@@ -349,31 +326,16 @@
         pointer-events: none;
       }
 
-      .toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
       @keyframes fadeUp {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
       }
 
-      .inner > * {
-        animation: fadeUp 0.3s ease both;
-      }
-      .inner > *:nth-child(1) {
-        animation-delay: 0.03s;
-      }
-      .inner > *:nth-child(2) {
-        animation-delay: 0.08s;
-      }
+      .inner > * { animation: fadeUp 0.3s ease both; }
+      .inner > *:nth-child(1) { animation-delay: 0.03s; }
+      .inner > *:nth-child(2) { animation-delay: 0.08s; }
     </style>
   </head>
   <body>
@@ -396,9 +358,7 @@
       <div class="footer-inner">
         <div class="footer-text">
           built in go ·
-          <a href="https://github.com/tarunbtw/pastebin" target="_blank"
-            >github</a
-          >
+          <a href="https://github.com/tarunbtw/pastebin" target="_blank">github</a>
         </div>
         <div class="footer-text" id="footer-meta"></div>
       </div>
@@ -413,10 +373,7 @@
       let pasteContent = "";
 
       function escapeHtml(s) {
-        return s
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;");
+        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       }
 
       function showToast(msg) {
@@ -428,15 +385,129 @@
 
       function copyContent() {
         if (!pasteContent) return;
-        navigator.clipboard
-          .writeText(pasteContent)
-          .then(() => showToast("copied to clipboard"));
+        navigator.clipboard.writeText(pasteContent).then(() => showToast("copied to clipboard"));
       }
 
       function copyUrl() {
-        navigator.clipboard
-          .writeText(window.location.href)
-          .then(() => showToast("link copied"));
+        navigator.clipboard.writeText(window.location.href).then(() => showToast("link copied"));
+      }
+
+      function showPasswordPrompt(errorMsg) {
+        inner.innerHTML = `
+          <div class="gone">
+            <div class="gone-box">
+              <div class="gone-icon">🔒</div>
+              <div class="gone-title">password required</div>
+              <div class="gone-sub">this paste is protected. enter the password to view it.</div>
+              <div class="pw-row">
+                <input class="pw-input" id="pw-input" type="password" placeholder="enter password"
+                  onkeydown="if(event.key==='Enter') submitPassword()" />
+                <button class="pw-btn" onclick="submitPassword()">unlock</button>
+              </div>
+              <div class="pw-error" id="pw-error">${errorMsg || ""}</div>
+            </div>
+          </div>`;
+        setTimeout(() => document.getElementById("pw-input")?.focus(), 100);
+      }
+
+      async function submitPassword() {
+        const pw = document.getElementById("pw-input")?.value;
+        if (!pw) return;
+
+        const res = await fetch("/api/paste/" + id, {
+          headers: { "X-Paste-Password": pw }
+        });
+
+        if (res.status === 401) {
+          showPasswordPrompt("wrong password, try again");
+          return;
+        }
+        if (res.status === 404 || res.status === 410) {
+          showGone();
+          return;
+        }
+
+        const d = await res.json();
+        renderPaste(d);
+      }
+
+      function showGone() {
+        inner.innerHTML = `
+          <div class="gone">
+            <div class="gone-box">
+              <div class="gone-icon">⌫</div>
+              <div class="gone-title">paste not found</div>
+              <div class="gone-sub">this paste expired, hit its view limit, or never existed.</div>
+              <a href="/" class="btn-new">new paste →</a>
+            </div>
+          </div>`;
+      }
+
+      function renderPaste(d) {
+        pasteContent = d.content;
+        document.title = "paste · " + id;
+
+        const lines = d.content.split("\n");
+        const nums = Array.from({ length: lines.length }, (_, i) => i + 1).join("\n");
+
+        let expiryText = "never expires";
+        if (d.expires_at) {
+          const exp = new Date(d.expires_at);
+          expiryText = "expires " + exp.toLocaleDateString("en-US", {
+            month: "short", day: "numeric", year: "numeric"
+          });
+        }
+
+        const views = d.view_limit
+          ? `${d.view_count} / ${d.view_limit} views`
+          : `${d.view_count} views`;
+
+        const created = new Date(d.created_at).toLocaleDateString("en-US", {
+          month: "short", day: "numeric", year: "numeric"
+        });
+
+        const burnBadge = d.burn
+          ? `<span class="lang-tag" style="color:#ff6b6b;border-color:#ff6b6b55;">🔥 burn</span>`
+          : "";
+
+        inner.innerHTML = `
+          <div class="meta">
+            <div class="meta-left">
+              <span class="lang-tag">${d.language}</span>
+              ${burnBadge}
+            </div>
+            <div class="meta-right">
+              <span>${views}</span>
+              <span>${expiryText}</span>
+              <span>${created}</span>
+            </div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-bar">
+              <div class="code-bar-left">
+                <div class="dots">
+                  <div class="dot"></div>
+                  <div class="dot"></div>
+                  <div class="dot"></div>
+                </div>
+                <div class="paste-id">${id}</div>
+              </div>
+              <button class="btn-copy-url" onclick="copyContent()">copy</button>
+            </div>
+            <div class="code-body">
+              <div class="gutter">${nums}</div>
+              <code id="paste-content">${escapeHtml(d.content)}</code>
+            </div>
+          </div>`;
+
+        document.getElementById("footer-meta").textContent =
+          `${lines.length} lines · ${d.content.length.toLocaleString()} chars`;
+
+        const codeEl = document.getElementById("paste-content");
+        if (d.language && d.language !== "plaintext") {
+          codeEl.classList.add("language-" + d.language);
+          hljs.highlightElement(codeEl);
+        }
       }
 
       async function load() {
@@ -444,88 +515,18 @@
           const res = await fetch("/api/paste/" + id);
 
           if (res.status === 404 || res.status === 410) {
-            inner.innerHTML = `
-              <div class="gone">
-                <div class="gone-box">
-                  <div class="gone-icon">⌫</div>
-                  <div class="gone-title">paste not found</div>
-                  <div class="gone-sub">this paste expired, hit its view limit, or never existed.</div>
-                  <a href="/" class="btn-new">new paste →</a>
-                </div>
-              </div>`;
+            showGone();
+            return;
+          }
+
+          if (res.status === 401) {
+            showPasswordPrompt();
             return;
           }
 
           const d = await res.json();
-          pasteContent = d.content;
-          document.title = "paste · " + id;
+          renderPaste(d);
 
-          const lines = d.content.split("\n");
-          const nums = Array.from(
-            { length: lines.length },
-            (_, i) => i + 1,
-          ).join("\n");
-
-          let expiryText = "never expires";
-          if (d.expires_at) {
-            const exp = new Date(d.expires_at);
-            expiryText =
-              "expires " +
-              exp.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              });
-          }
-
-          const views = d.view_limit
-            ? `${d.view_count + 1} / ${d.view_limit} views`
-            : `${d.view_count + 1} views`;
-
-          const created = new Date(d.created_at).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          });
-
-          inner.innerHTML = `
-            <div class="meta">
-              <div class="meta-left">
-                <span class="lang-tag">${d.language}</span>
-              </div>
-              <div class="meta-right">
-                <span>${views}</span>
-                <span>${expiryText}</span>
-                <span>${created}</span>
-              </div>
-            </div>
-            <div class="code-wrap">
-              <div class="code-bar">
-                <div class="code-bar-left">
-                  <div class="dots">
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                  </div>
-                  <div class="paste-id">${id}</div>
-                </div>
-                <button class="btn-copy-url" onclick="copyContent()">copy</button>
-              </div>
-              <div class="code-body">
-                <div class="gutter">${nums}</div>
-                <code id="paste-content">${escapeHtml(d.content)}</code>
-              </div>
-            </div>`;
-
-          document.getElementById("footer-meta").textContent =
-            `${lines.length} lines · ${d.content.length.toLocaleString()} chars`;
-
-          // syntax highlighting
-          const codeEl = document.getElementById("paste-content");
-          if (d.language && d.language !== "plaintext") {
-            codeEl.classList.add("language-" + d.language);
-            hljs.highlightElement(codeEl);
-          }
         } catch {
           inner.innerHTML = `<div style="padding:2rem;font-family:monospace;font-size:0.8rem;color:var(--text-dim)">failed to load paste.</div>`;
         }

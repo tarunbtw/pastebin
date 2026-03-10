@@ -16,17 +16,14 @@ func initDB() {
 	if dsn == "" {
 		log.Fatal("DATABASE_URL is not set")
 	}
-
 	var err error
 	db, err = sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatalf("failed to open db: %v", err)
 	}
-
 	if err = db.Ping(); err != nil {
 		log.Fatalf("failed to connect to db: %v", err)
 	}
-
 	log.Println("connected to database")
 	createSchema()
 }
@@ -34,27 +31,28 @@ func initDB() {
 func createSchema() {
 	query := `
 	CREATE TABLE IF NOT EXISTS pastes (
-		id          TEXT PRIMARY KEY,
-		content     TEXT NOT NULL,
-		language    TEXT NOT NULL DEFAULT 'plaintext',
-		expires_at  TIMESTAMPTZ,
-		view_limit  INT,
-		view_count  INT NOT NULL DEFAULT 0,
-		created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
-	);`
-
+		id            TEXT PRIMARY KEY,
+		content       TEXT NOT NULL,
+		language      TEXT NOT NULL DEFAULT 'plaintext',
+		expires_at    TIMESTAMPTZ,
+		view_limit    INT,
+		view_count    INT NOT NULL DEFAULT 0,
+		created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+		password_hash TEXT NOT NULL DEFAULT '',
+		burn          BOOLEAN NOT NULL DEFAULT FALSE
+	);
+	ALTER TABLE pastes ADD COLUMN IF NOT EXISTS password_hash TEXT NOT NULL DEFAULT '';
+	ALTER TABLE pastes ADD COLUMN IF NOT EXISTS burn BOOLEAN NOT NULL DEFAULT FALSE;`
 	if _, err := db.Exec(query); err != nil {
 		log.Fatalf("failed to create schema: %v", err)
 	}
-
 	log.Println("schema ready")
 }
 
 func insertPaste(p *Paste) error {
 	query := `
-	INSERT INTO pastes (id, content, language, expires_at, view_limit, created_at)
-	VALUES ($1, $2, $3, $4, $5, $6)`
-
+	INSERT INTO pastes (id, content, language, expires_at, view_limit, created_at, password_hash, burn)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 	_, err := db.Exec(query,
 		p.ID,
 		p.Content,
@@ -62,15 +60,16 @@ func insertPaste(p *Paste) error {
 		p.ExpiresAt,
 		p.ViewLimit,
 		p.CreatedAt,
+		p.PasswordHash,
+		p.Burn,
 	)
 	return err
 }
 
 func getPaste(id string) (*Paste, error) {
 	query := `
-	SELECT id, content, language, expires_at, view_limit, view_count, created_at
+	SELECT id, content, language, expires_at, view_limit, view_count, created_at, password_hash, burn
 	FROM pastes WHERE id = $1`
-
 	p := &Paste{}
 	err := db.QueryRow(query, id).Scan(
 		&p.ID,
@@ -80,6 +79,8 @@ func getPaste(id string) (*Paste, error) {
 		&p.ViewLimit,
 		&p.ViewCount,
 		&p.CreatedAt,
+		&p.PasswordHash,
+		&p.Burn,
 	)
 	if err != nil {
 		return nil, err

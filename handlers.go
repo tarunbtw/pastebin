@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/subtle"
 	"database/sql"
 	"encoding/json"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"github.com/rs/xid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +51,13 @@ func createPasteHandler(w http.ResponseWriter, r *http.Request) {
 		Language:  req.Language,
 		CreatedAt: time.Now(),
 		ViewLimit: req.ViewLimit,
+		Burn:      req.Burn,
+	}
+
+	// burn after read = view limit of 1
+	if req.Burn {
+		one := 1
+		paste.ViewLimit = &one
 	}
 
 	// parse expiry
@@ -66,7 +75,16 @@ func createPasteHandler(w http.ResponseWriter, r *http.Request) {
 		t := time.Now().Add(30 * 24 * time.Hour)
 		paste.ExpiresAt = &t
 	}
-	// "never" → ExpiresAt stays nil
+
+	// hash password if provided
+	if req.Password != "" {
+		hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			http.Error(w, `{"error":"failed to hash password"}`, http.StatusInternalServerError)
+			return
+		}
+		paste.PasswordHash = string(hash)
+	}
 
 	if err := insertPaste(paste); err != nil {
 		http.Error(w, `{"error":"failed to save paste"}`, http.StatusInternalServerError)
@@ -92,6 +110,9 @@ func getPasteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// optional password from header
+	password := r.Header.Get("X-Paste-Password")
+
 	paste, err := getPaste(id)
 	if err == sql.ErrNoRows {
 		http.Error(w, `{"error":"paste not found"}`, http.StatusNotFound)
@@ -115,7 +136,37 @@ func getPasteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// check password
+	if paste.PasswordHash != "" {
+		if password == "" {
+			// tell client this paste is password protected
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"error":              "password required",
+				"password_protected": true,
+			})
+			return
+		}
+		if err := bcrypt.CompareHashAndPassword([]byte(paste.PasswordHash), []byte(password)); err != nil {
+			// constant time to avoid timing attacks
+			_ = subtle.ConstantTimeCompare([]byte(password), []byte(password))
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"error":              "wrong password",
+				"password_protected": true,
+			})
+			return
+		}
+	}
+
 	incrementViewCount(id)
+
+	// if burn after read, delete after incrementing
+	if paste.ViewLimit != nil && *paste.ViewLimit == 1 && paste.Burn {
+		deletePaste(id)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(paste)

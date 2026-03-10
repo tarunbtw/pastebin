@@ -76,26 +76,6 @@
         color: var(--text-dim);
       }
 
-      .theme-btn {
-        background: transparent;
-        border: 1px solid var(--border);
-        color: var(--text-dim);
-        width: 30px;
-        height: 30px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.15s;
-      }
-
-      .theme-btn:hover {
-        border-color: var(--border-focus);
-        color: var(--text);
-      }
-
       main {
         flex: 1;
         padding: 2.5rem 4rem;
@@ -295,7 +275,7 @@
         background: var(--dropdown-hover);
       }
 
-      /* number input */
+      /* inputs */
       .field input {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -315,6 +295,30 @@
       }
       .field input::placeholder {
         color: var(--text-muted);
+      }
+
+      /* burn row */
+      .burn-row {
+        display: flex;
+        align-items: center;
+      }
+
+      .burn-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .burn-label input[type="checkbox"] {
+        accent-color: var(--accent);
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
       }
 
       /* submit */
@@ -477,16 +481,24 @@
                 <div class="select-option" data-value="c">c</div>
                 <div class="select-option" data-value="cpp">c++</div>
                 <div class="select-option" data-value="java">java</div>
+                <div class="select-option" data-value="kotlin">kotlin</div>
+                <div class="select-option" data-value="swift">swift</div>
                 <div class="select-option" data-value="bash">bash</div>
+                <div class="select-option" data-value="shell">shell</div>
                 <div class="select-option" data-value="sql">sql</div>
                 <div class="select-option" data-value="json">json</div>
                 <div class="select-option" data-value="html">html</div>
                 <div class="select-option" data-value="css">css</div>
                 <div class="select-option" data-value="yaml">yaml</div>
+                <div class="select-option" data-value="toml">toml</div>
                 <div class="select-option" data-value="markdown">markdown</div>
                 <div class="select-option" data-value="dockerfile">
                   dockerfile
                 </div>
+                <div class="select-option" data-value="xml">xml</div>
+                <div class="select-option" data-value="ruby">ruby</div>
+                <div class="select-option" data-value="php">php</div>
+                <div class="select-option" data-value="csharp">c#</div>
               </div>
             </div>
           </div>
@@ -496,14 +508,12 @@
             <label>Expiry</label>
             <div class="custom-select" id="sel-expiry">
               <div class="select-trigger" onclick="toggleDropdown('expiry')">
-                <span class="select-value">never</span>
+                <span class="select-value">1 hour</span>
                 <span class="select-arrow">▼</span>
               </div>
               <div class="select-dropdown" id="dd-expiry">
-                <div class="select-option selected" data-value="never">
-                  never
-                </div>
-                <div class="select-option" data-value="1h">1 hour</div>
+                <div class="select-option" data-value="never">never</div>
+                <div class="select-option selected" data-value="1h">1 hour</div>
                 <div class="select-option" data-value="24h">24 hours</div>
                 <div class="select-option" data-value="7d">7 days</div>
                 <div class="select-option" data-value="30d">30 days</div>
@@ -521,6 +531,19 @@
               min="1"
             />
           </div>
+
+          <!-- password -->
+          <div class="field">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="optional" />
+          </div>
+        </div>
+
+        <div class="burn-row">
+          <label class="burn-label">
+            <input type="checkbox" id="burn" />
+            <span>🔥 burn after read</span>
+          </label>
         </div>
 
         <div class="submit-row">
@@ -548,19 +571,13 @@
     </footer>
 
     <script>
-      // custom dropdowns
-      const dropdownValues = { language: "plaintext", expiry: "never" };
+      const dropdownValues = { language: "plaintext", expiry: "1h" };
 
       function toggleDropdown(name) {
-        const trigger = document.querySelector(
-          `#sel-${name === "language" ? "language" : "expiry"} .select-trigger`,
-        );
-        const dd = document.getElementById(
-          `dd-${name === "language" ? "language" : "expiry"}`,
-        );
+        const dd = document.getElementById(`dd-${name}`);
+        const trigger = document.querySelector(`#sel-${name} .select-trigger`);
         const isOpen = dd.classList.contains("open");
 
-        // close all
         document
           .querySelectorAll(".select-dropdown")
           .forEach((d) => d.classList.remove("open"));
@@ -574,34 +591,23 @@
         }
       }
 
-      // wire up options
       document.querySelectorAll(".select-option").forEach((opt) => {
         opt.addEventListener("click", (e) => {
           e.stopPropagation();
           const dd = opt.closest(".select-dropdown");
           const trigger = dd.previousElementSibling;
-          const container = opt.closest(".custom-select");
-
-          // figure out which dropdown
           const name = dd.id === "dd-language" ? "language" : "expiry";
           dropdownValues[name] = opt.dataset.value;
-
-          // update display
           trigger.querySelector(".select-value").textContent = opt.textContent;
-
-          // mark selected
           dd.querySelectorAll(".select-option").forEach((o) =>
             o.classList.remove("selected"),
           );
           opt.classList.add("selected");
-
-          // close
           dd.classList.remove("open");
           trigger.classList.remove("open");
         });
       });
 
-      // close on outside click
       document.addEventListener("click", (e) => {
         if (!e.target.closest(".custom-select")) {
           document
@@ -613,7 +619,6 @@
         }
       });
 
-      // editor
       const content = document.getElementById("content");
       const gutter = document.getElementById("gutter");
       const editorMeta = document.getElementById("editor-meta");
@@ -663,12 +668,16 @@
         btn.textContent = "creating...";
 
         const vl = document.getElementById("view_limit").value;
+        const pw = document.getElementById("password").value;
+
         const body = {
           content: text,
           language: dropdownValues.language,
           expires_in: dropdownValues.expiry,
+          burn: document.getElementById("burn").checked,
         };
         if (vl) body.view_limit = parseInt(vl);
+        if (pw) body.password = pw;
 
         try {
           const res = await fetch("/api/paste", {
