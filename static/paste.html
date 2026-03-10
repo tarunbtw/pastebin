@@ -31,19 +31,6 @@
         --accent-fg: #0f0f0f;
       }
 
-      [data-theme="light"] {
-        --bg: #f5f5f4;
-        --surface: #ffffff;
-        --surface2: #f0f0ef;
-        --border: #e0e0de;
-        --border-focus: #aaa;
-        --text: #1a1a1a;
-        --text-dim: #777;
-        --text-muted: #bbb;
-        --accent: #1a1a1a;
-        --accent-fg: #ffffff;
-      }
-
       html,
       body {
         height: 100%;
@@ -412,7 +399,6 @@
           <button class="btn-sm" onclick="copyUrl()">copy bin</button>
           <a class="btn-sm" id="raw-link" href="#" target="_blank">raw</a>
           <a class="btn-sm" href="/">new paste</a>
-          <button class="theme-btn" id="theme-btn">☀</button>
         </div>
       </div>
     </header>
@@ -436,20 +422,6 @@
     <div class="toast" id="toast">copied</div>
 
     <script>
-      // theme
-      const root = document.documentElement;
-      const themeBtn = document.getElementById("theme-btn");
-      const saved = localStorage.getItem("theme") || "dark";
-      root.setAttribute("data-theme", saved);
-      themeBtn.textContent = saved === "dark" ? "☀" : "☾";
-      themeBtn.addEventListener("click", () => {
-        const next =
-          root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        root.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-        themeBtn.textContent = next === "dark" ? "☀" : "☾";
-      });
-
       const id = window.location.pathname.replace("/p/", "");
       const inner = document.getElementById("inner");
       document.getElementById("raw-link").href = "/raw/" + id;

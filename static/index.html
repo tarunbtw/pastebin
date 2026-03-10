@@ -33,21 +33,6 @@
         --dropdown-hover: #2f2f2f;
       }
 
-      [data-theme="light"] {
-        --bg: #f5f5f4;
-        --surface: #ffffff;
-        --surface2: #f0f0ef;
-        --border: #e0e0de;
-        --border-focus: #aaa;
-        --text: #1a1a1a;
-        --text-dim: #777;
-        --text-muted: #bbb;
-        --accent: #1a1a1a;
-        --accent-fg: #ffffff;
-        --dropdown-bg: #ffffff;
-        --dropdown-hover: #f5f5f4;
-      }
-
       html,
       body {
         height: 100%;
@@ -440,7 +425,6 @@
     <header>
       <div class="header-inner">
         <a href="/" class="logo">paste<span>bin</span></a>
-        <button class="theme-btn" id="theme-btn">☀</button>
       </div>
     </header>
 
@@ -564,21 +548,6 @@
     </footer>
 
     <script>
-      // theme
-      const root = document.documentElement;
-      const themeBtn = document.getElementById("theme-btn");
-      const saved = localStorage.getItem("theme") || "dark";
-      root.setAttribute("data-theme", saved);
-      themeBtn.textContent = saved === "dark" ? "☀" : "☾";
-
-      themeBtn.addEventListener("click", () => {
-        const next =
-          root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        root.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-        themeBtn.textContent = next === "dark" ? "☀" : "☾";
-      });
-
       // custom dropdowns
       const dropdownValues = { language: "plaintext", expiry: "never" };
 
