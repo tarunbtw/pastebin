@@ -9,36 +9,30 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root[data-theme="dark"] {
-      --bg: #111113;
-      --bg2: #18181b;
-      --surface: #1c1c1f;
-      --surface2: #222226;
-      --border: #2e2e32;
-      --border-focus: #52525b;
-      --text: #fafafa;
-      --text-dim: #71717a;
-      --text-muted: #3f3f46;
-      --accent: #ffffff;
-      --accent-fg: #000000;
-      --scrollbar: #27272a;
-      --gone-bg: #1c1c1f;
+    :root {
+      --bg: #0f0f0f;
+      --surface: #171717;
+      --surface2: #1e1e1e;
+      --border: #282828;
+      --border-focus: #444;
+      --text: #e8e8e8;
+      --text-dim: #666;
+      --text-muted: #333;
+      --accent: #e8e8e8;
+      --accent-fg: #0f0f0f;
     }
 
-    :root[data-theme="light"] {
-      --bg: #fafafa;
-      --bg2: #f4f4f5;
+    [data-theme="light"] {
+      --bg: #f5f5f4;
       --surface: #ffffff;
-      --surface2: #f4f4f5;
-      --border: #e4e4e7;
-      --border-focus: #a1a1aa;
-      --text: #09090b;
-      --text-dim: #71717a;
-      --text-muted: #d4d4d8;
-      --accent: #09090b;
+      --surface2: #f0f0ef;
+      --border: #e0e0de;
+      --border-focus: #aaa;
+      --text: #1a1a1a;
+      --text-dim: #777;
+      --text-muted: #ccc;
+      --accent: #1a1a1a;
       --accent-fg: #ffffff;
-      --scrollbar: #e4e4e7;
-      --gone-bg: #f4f4f5;
     }
 
     html, body { height: 100%; }
@@ -50,46 +44,46 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      transition: background 0.2s, color 0.2s;
     }
 
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
-
+    /* ── HEADER ── */
     header {
+      height: 56px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 4rem;
+    }
+
+    .header-inner {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 2rem;
-      height: 52px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
-      position: sticky;
-      top: 0;
-      z-index: 10;
     }
 
     .logo {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 500;
       color: var(--text);
       text-decoration: none;
     }
 
-    .logo span { color: var(--text-dim); font-weight: 300; }
+    .logo span { color: var(--text-dim); }
 
-    .header-right { display: flex; align-items: center; gap: 0.5rem; }
+    .header-actions { display: flex; align-items: center; gap: 0.5rem; }
 
-    .btn-header {
+    .btn-sm {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-dim);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      padding: 0.35rem 0.8rem;
-      border-radius: 6px;
+      font-size: 0.68rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 5px;
       cursor: pointer;
       transition: all 0.15s;
       text-decoration: none;
@@ -97,20 +91,17 @@
       align-items: center;
     }
 
-    .btn-header:hover { border-color: var(--border-focus); color: var(--text); }
+    .btn-sm:hover { border-color: var(--border-focus); color: var(--text); }
 
     .theme-btn {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-dim);
-      width: 32px;
-      height: 32px;
+      width: 30px; height: 30px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 0.75rem;
+      display: flex; align-items: center; justify-content: center;
       transition: all 0.15s;
     }
 
@@ -119,17 +110,23 @@
     /* ── MAIN ── */
     main {
       flex: 1;
+      padding: 2rem 4rem;
       display: flex;
       flex-direction: column;
-      max-width: 860px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 1.5rem 1.5rem;
-      gap: 0.75rem;
     }
 
-    /* ── META BAR ── */
-    .meta-bar {
+    .inner {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      flex: 1;
+    }
+
+    /* ── META ── */
+    .meta {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -139,85 +136,82 @@
 
     .meta-left { display: flex; align-items: center; gap: 0.5rem; }
 
-    .lang-badge {
+    .lang-tag {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
-      padding: 0.2rem 0.6rem;
-      background: var(--surface2);
+      font-size: 0.62rem;
+      padding: 0.2rem 0.55rem;
       border: 1px solid var(--border);
       border-radius: 4px;
+      background: var(--surface2);
       color: var(--text-dim);
-      letter-spacing: 0.3px;
     }
 
     .meta-right {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       color: var(--text-muted);
       display: flex;
-      gap: 1.2rem;
+      gap: 1.5rem;
     }
 
-    .meta-right span { display: flex; align-items: center; gap: 0.3rem; }
-
-    /* ── CODE BLOCK ── */
-    .code-container {
+    /* ── CODE ── */
+    .code-wrap {
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
       background: var(--surface);
       flex: 1;
     }
 
-    .code-header {
+    .code-bar {
+      height: 38px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 1rem;
-      height: 40px;
-      background: var(--surface2);
-      border-bottom: 1px solid var(--border);
     }
 
-    .code-dots { display: flex; gap: 5px; }
-    .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--border); }
+    .dots { display: flex; gap: 5px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
 
-    .code-id {
+    .paste-id {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       color: var(--text-muted);
     }
 
     .code-body { display: flex; }
 
-    .line-numbers {
-      padding: 1rem 0.75rem 1rem 0.5rem;
-      min-width: 48px;
-      text-align: right;
-      border-right: 1px solid var(--border);
+    .gutter {
+      padding: 1rem 0.75rem;
       background: var(--surface2);
+      border-right: 1px solid var(--border);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem;
-      line-height: 1.7;
+      font-size: 0.8rem;
+      line-height: 1.75;
       color: var(--text-muted);
+      text-align: right;
       user-select: none;
+      min-width: 44px;
       white-space: pre;
     }
 
     #paste-content {
       flex: 1;
-      padding: 1rem 1.2rem;
+      padding: 1rem 1.25rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem;
-      line-height: 1.7;
+      font-size: 0.8rem;
+      line-height: 1.75;
       color: var(--text);
       white-space: pre-wrap;
       word-break: break-all;
-      overflow-x: auto;
+      display: block;
     }
 
-    /* ── GONE STATE ── */
-    .gone-container {
+    /* ── GONE ── */
+    .gone {
       flex: 1;
       display: flex;
       align-items: center;
@@ -225,48 +219,58 @@
     }
 
     .gone-box {
-      text-align: center;
-      padding: 3rem 2rem;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--gone-bg);
-      max-width: 380px;
+      border-radius: 10px;
+      background: var(--surface);
+      padding: 3rem 2.5rem;
+      text-align: center;
+      max-width: 360px;
       width: 100%;
     }
 
-    .gone-icon {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
-    }
-
-    .gone-title {
-      font-size: 1rem;
-      font-weight: 400;
-      color: var(--text);
-      margin-bottom: 0.4rem;
-    }
-
-    .gone-sub {
-      font-size: 0.82rem;
-      color: var(--text-dim);
-      margin-bottom: 1.5rem;
-      line-height: 1.5;
-    }
+    .gone-icon { font-size: 1.8rem; margin-bottom: 1rem; opacity: 0.4; }
+    .gone-title { font-size: 0.95rem; color: var(--text); margin-bottom: 0.4rem; }
+    .gone-sub { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 1.5rem; }
 
     .btn-new {
       display: inline-block;
       background: var(--accent);
       color: var(--accent-fg);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      padding: 0.65rem 1.4rem;
-      border-radius: 7px;
+      font-size: 0.75rem;
+      padding: 0.6rem 1.3rem;
+      border-radius: 6px;
       text-decoration: none;
       transition: opacity 0.15s;
     }
 
     .btn-new:hover { opacity: 0.8; }
+
+    /* ── FOOTER ── */
+    footer {
+      height: 48px;
+      border-top: 1px solid var(--border);
+      padding: 0 4rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-inner {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .footer-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+    }
+
+    .footer-text a { color: var(--text-dim); text-decoration: none; }
+    .footer-text a:hover { color: var(--text); }
 
     /* ── TOAST ── */
     .toast {
@@ -277,62 +281,50 @@
       background: var(--text);
       color: var(--bg);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      padding: 0.5rem 1.1rem;
+      font-size: 0.7rem;
+      padding: 0.45rem 1rem;
       border-radius: 999px;
       opacity: 0;
       transition: all 0.2s;
       pointer-events: none;
-      white-space: nowrap;
     }
 
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .footer-text {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--text-muted);
-    }
-
-    .footer-text a { color: var(--text-dim); text-decoration: none; }
-    .footer-text a:hover { color: var(--text); }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    main > * { animation: fadeUp 0.3s ease both; }
-    main > *:nth-child(1) { animation-delay: 0.05s; }
-    main > *:nth-child(2) { animation-delay: 0.1s; }
+    .inner > * { animation: fadeUp 0.3s ease both; }
+    .inner > *:nth-child(1) { animation-delay: 0.03s; }
+    .inner > *:nth-child(2) { animation-delay: 0.08s; }
   </style>
 </head>
 <body>
   <header>
-    <a href="/" class="logo">paste<span>bin</span></a>
-    <div class="header-right">
-      <button class="btn-header" onclick="copyContent()">copy</button>
-      <a class="btn-header" id="raw-link" href="#" target="_blank">raw</a>
-      <a class="btn-header" href="/">new paste</a>
-      <button class="theme-btn" id="theme-btn">☀</button>
+    <div class="header-inner">
+      <a href="/" class="logo">paste<span>bin</span></a>
+      <div class="header-actions">
+        <button class="btn-sm" onclick="copyContent()">copy</button>
+        <a class="btn-sm" id="raw-link" href="#" target="_blank">raw</a>
+        <a class="btn-sm" href="/">new paste</a>
+        <button class="theme-btn" id="theme-btn">☀</button>
+      </div>
     </div>
   </header>
 
-  <main id="main">
-    <!-- injected by JS -->
+  <main>
+    <div class="inner" id="inner">
+      <!-- injected by JS -->
+    </div>
   </main>
 
   <footer>
-    <div class="footer-text">built in go · <a href="https://github.com/tarunbtw/pastebin" target="_blank">source</a></div>
-    <div class="footer-text" id="footer-meta"></div>
+    <div class="footer-inner">
+      <div class="footer-text">built in go · <a href="https://github.com/tarunbtw/pastebin" target="_blank">github</a></div>
+      <div class="footer-text" id="footer-meta"></div>
+    </div>
   </footer>
 
   <div class="toast" id="toast">copied to clipboard</div>
@@ -346,107 +338,97 @@
     themeBtn.textContent = saved === 'dark' ? '☀' : '☾';
 
     themeBtn.addEventListener('click', () => {
-      const current = root.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
       themeBtn.textContent = next === 'dark' ? '☀' : '☾';
     });
 
     const id = window.location.pathname.replace('/p/', '');
-    const main = document.getElementById('main');
+    const inner = document.getElementById('inner');
     document.getElementById('raw-link').href = '/raw/' + id;
-
     let pasteContent = '';
+
+    function escapeHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
 
     async function load() {
       try {
         const res = await fetch('/api/paste/' + id);
 
         if (res.status === 404 || res.status === 410) {
-          main.innerHTML = `
-            <div class="gone-container">
+          inner.innerHTML = `
+            <div class="gone">
               <div class="gone-box">
                 <div class="gone-icon">⌫</div>
                 <div class="gone-title">paste not found</div>
-                <div class="gone-sub">this paste has expired, reached its view limit, or never existed.</div>
+                <div class="gone-sub">this paste expired, hit its view limit, or never existed.</div>
                 <a href="/" class="btn-new">new paste →</a>
               </div>
             </div>`;
           return;
         }
 
-        const data = await res.json();
-        pasteContent = data.content;
+        const d = await res.json();
+        pasteContent = d.content;
+        document.title = 'paste · ' + id;
 
-        document.title = 'paste / ' + id;
+        const lines = d.content.split('\n');
+        const nums = Array.from({length: lines.length}, (_, i) => i + 1).join('\n');
 
-        const lines = data.content.split('\n');
-        const lineNums = Array.from({length: lines.length}, (_, i) => i + 1).join('\n');
-
-        // expiry info
         let expiryText = 'never expires';
-        if (data.expires_at) {
-          const exp = new Date(data.expires_at);
-          expiryText = 'expires ' + exp.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        if (d.expires_at) {
+          const exp = new Date(d.expires_at);
+          expiryText = 'expires ' + exp.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
         }
 
-        const viewLimitText = data.view_limit
-          ? `${data.view_count + 1} / ${data.view_limit} views`
-          : `${data.view_count + 1} views`;
+        const views = d.view_limit
+          ? `${d.view_count + 1} / ${d.view_limit} views`
+          : `${d.view_count + 1} views`;
 
-        const created = new Date(data.created_at);
-        const createdText = created.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const created = new Date(d.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
 
-        main.innerHTML = `
-          <div class="meta-bar">
+        inner.innerHTML = `
+          <div class="meta">
             <div class="meta-left">
-              <span class="lang-badge">${data.language}</span>
+              <span class="lang-tag">${d.language}</span>
             </div>
             <div class="meta-right">
-              <span>${viewLimitText}</span>
+              <span>${views}</span>
               <span>${expiryText}</span>
-              <span>${createdText}</span>
+              <span>${created}</span>
             </div>
           </div>
-
-          <div class="code-container">
-            <div class="code-header">
-              <div class="code-dots">
+          <div class="code-wrap">
+            <div class="code-bar">
+              <div class="dots">
                 <div class="dot"></div>
                 <div class="dot"></div>
                 <div class="dot"></div>
               </div>
-              <div class="code-id">${id}</div>
+              <div class="paste-id">${id}</div>
             </div>
             <div class="code-body">
-              <div class="line-numbers">${lineNums}</div>
-              <code id="paste-content">${escapeHtml(data.content)}</code>
+              <div class="gutter">${nums}</div>
+              <code id="paste-content">${escapeHtml(d.content)}</code>
             </div>
           </div>`;
 
         document.getElementById('footer-meta').textContent =
-          `${lines.length} lines · ${data.content.length.toLocaleString()} chars`;
+          `${lines.length} lines · ${d.content.length.toLocaleString()} chars`;
 
-      } catch(e) {
-        main.innerHTML = `<div style="padding:2rem;font-family:monospace;color:var(--text-dim)">failed to load paste.</div>`;
+      } catch {
+        inner.innerHTML = `<div style="padding:2rem;font-family:monospace;font-size:0.8rem;color:var(--text-dim)">failed to load paste.</div>`;
       }
-    }
-
-    function escapeHtml(str) {
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
     }
 
     function copyContent() {
       if (!pasteContent) return;
       navigator.clipboard.writeText(pasteContent).then(() => {
-        const toast = document.getElementById('toast');
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2000);
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2000);
       });
     }
 
