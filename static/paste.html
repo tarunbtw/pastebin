@@ -1,364 +1,493 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="dark">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>pastebin</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pastebin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    :root {
-      --bg: #0f0f0f;
-      --surface: #171717;
-      --surface2: #1e1e1e;
-      --border: #282828;
-      --border-focus: #444;
-      --text: #e8e8e8;
-      --text-dim: #666;
-      --text-muted: #333;
-      --accent: #e8e8e8;
-      --accent-fg: #0f0f0f;
-    }
+      :root {
+        --bg: #0f0f0f;
+        --surface: #1c1c1c;
+        --surface2: #252525;
+        --border: #3a3a3a;
+        --border-focus: #707070;
+        --text: #ffffff;
+        --text-dim: #aaaaaa;
+        --text-muted: #666666;
+        --accent: #ffffff;
+        --accent-fg: #0f0f0f;
+      }
 
-    [data-theme="light"] {
-      --bg: #f5f5f4;
-      --surface: #ffffff;
-      --surface2: #f0f0ef;
-      --border: #e0e0de;
-      --border-focus: #aaa;
-      --text: #1a1a1a;
-      --text-dim: #777;
-      --text-muted: #ccc;
-      --accent: #1a1a1a;
-      --accent-fg: #ffffff;
-    }
+      [data-theme="light"] {
+        --bg: #f5f5f4;
+        --surface: #ffffff;
+        --surface2: #f0f0ef;
+        --border: #e0e0de;
+        --border-focus: #aaa;
+        --text: #1a1a1a;
+        --text-dim: #777;
+        --text-muted: #bbb;
+        --accent: #1a1a1a;
+        --accent-fg: #ffffff;
+      }
 
-    html, body { height: 100%; }
+      html,
+      body {
+        height: 100%;
+      }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-    /* ── HEADER ── */
-    header {
-      height: 56px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      padding: 0 4rem;
-    }
+      /* header */
+      header {
+        height: 56px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 4rem;
+        flex-shrink: 0;
+      }
 
-    .header-inner {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+      .header-inner {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-    .logo {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.88rem;
-      font-weight: 500;
-      color: var(--text);
-      text-decoration: none;
-    }
+      .logo {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--text);
+        text-decoration: none;
+      }
 
-    .logo span { color: var(--text-dim); }
+      .logo span {
+        color: var(--text-dim);
+      }
 
-    .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-    .btn-sm {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      padding: 0.3rem 0.75rem;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.15s;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-    }
+      .btn-sm {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+      }
 
-    .btn-sm:hover { border-color: var(--border-focus); color: var(--text); }
+      .btn-sm:hover {
+        border-color: var(--border-focus);
+        color: var(--text);
+      }
 
-    .theme-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      width: 30px; height: 30px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.75rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
-    }
+      .theme-btn {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+      }
 
-    .theme-btn:hover { border-color: var(--border-focus); color: var(--text); }
+      .theme-btn:hover {
+        border-color: var(--border-focus);
+        color: var(--text);
+      }
 
-    /* ── MAIN ── */
-    main {
-      flex: 1;
-      padding: 2rem 4rem;
-      display: flex;
-      flex-direction: column;
-    }
+      /* main */
+      main {
+        padding: 2rem 4rem;
+        display: flex;
+        flex-direction: column;
+      }
 
-    .inner {
-      max-width: 900px;
-      width: 100%;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-      flex: 1;
-    }
+      .inner {
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
 
-    /* ── META ── */
-    .meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
+      /* meta */
+      .meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
 
-    .meta-left { display: flex; align-items: center; gap: 0.5rem; }
+      .meta-left {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-    .lang-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem;
-      padding: 0.2rem 0.55rem;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      background: var(--surface2);
-      color: var(--text-dim);
-    }
+      .lang-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.62rem;
+        padding: 0.2rem 0.55rem;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--surface2);
+        color: var(--text-dim);
+      }
 
-    .meta-right {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      display: flex;
-      gap: 1.5rem;
-    }
+      .meta-right {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        display: flex;
+        gap: 1.5rem;
+      }
 
-    /* ── CODE ── */
-    .code-wrap {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      background: var(--surface);
-      flex: 1;
-    }
+      /* code box — fits content, no stretching */
+      .code-wrap {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--surface);
+      }
 
-    .code-bar {
-      height: 38px;
-      background: var(--surface2);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 1rem;
-    }
+      .code-bar {
+        height: 38px;
+        background: var(--surface2);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+      }
 
-    .dots { display: flex; gap: 5px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+      .code-bar-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .dots {
+        display: flex;
+        gap: 5px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--border);
+      }
 
-    .paste-id {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem;
-      color: var(--text-muted);
-    }
+      .paste-id {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.62rem;
+        color: var(--text-muted);
+      }
 
-    .code-body { display: flex; }
+      .code-bar-right {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-    .gutter {
-      padding: 1rem 0.75rem;
-      background: var(--surface2);
-      border-right: 1px solid var(--border);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      line-height: 1.75;
-      color: var(--text-muted);
-      text-align: right;
-      user-select: none;
-      min-width: 44px;
-      white-space: pre;
-    }
+      .btn-copy-url {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.6rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
 
-    #paste-content {
-      flex: 1;
-      padding: 1rem 1.25rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      line-height: 1.75;
-      color: var(--text);
-      white-space: pre-wrap;
-      word-break: break-all;
-      display: block;
-    }
+      .btn-copy-url:hover {
+        border-color: var(--border-focus);
+        color: var(--text-dim);
+      }
 
-    /* ── GONE ── */
-    .gone {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+      .code-body {
+        display: flex;
+      }
 
-    .gone-box {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--surface);
-      padding: 3rem 2.5rem;
-      text-align: center;
-      max-width: 360px;
-      width: 100%;
-    }
+      .gutter {
+        padding: 1rem 0.75rem;
+        background: var(--surface2);
+        border-right: 1px solid var(--border);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        line-height: 1.75;
+        color: var(--text-muted);
+        text-align: right;
+        user-select: none;
+        min-width: 44px;
+        white-space: pre;
+      }
 
-    .gone-icon { font-size: 1.8rem; margin-bottom: 1rem; opacity: 0.4; }
-    .gone-title { font-size: 0.95rem; color: var(--text); margin-bottom: 0.4rem; }
-    .gone-sub { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 1.5rem; }
+      #paste-content {
+        flex: 1;
+        padding: 1rem 1.25rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        line-height: 1.75;
+        color: var(--text);
+        white-space: pre-wrap;
+        word-break: break-all;
+        display: block;
+      }
 
-    .btn-new {
-      display: inline-block;
-      background: var(--accent);
-      color: var(--accent-fg);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      padding: 0.6rem 1.3rem;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: opacity 0.15s;
-    }
+      /* gone state */
+      .gone {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 0;
+      }
 
-    .btn-new:hover { opacity: 0.8; }
+      .gone-box {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--surface);
+        padding: 3rem 2.5rem;
+        text-align: center;
+        max-width: 360px;
+        width: 100%;
+      }
 
-    /* ── FOOTER ── */
-    footer {
-      height: 48px;
-      border-top: 1px solid var(--border);
-      padding: 0 4rem;
-      display: flex;
-      align-items: center;
-    }
+      .gone-icon {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        opacity: 0.4;
+      }
+      .gone-title {
+        font-size: 0.95rem;
+        color: var(--text);
+        margin-bottom: 0.4rem;
+      }
+      .gone-sub {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+      }
 
-    .footer-inner {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-    }
+      .btn-new {
+        display: inline-block;
+        background: var(--accent);
+        color: var(--accent-fg);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        padding: 0.6rem 1.3rem;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: opacity 0.15s;
+      }
 
-    .footer-text {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem;
-      color: var(--text-muted);
-    }
+      .btn-new:hover {
+        opacity: 0.8;
+      }
 
-    .footer-text a { color: var(--text-dim); text-decoration: none; }
-    .footer-text a:hover { color: var(--text); }
+      /* footer */
+      footer {
+        height: 48px;
+        border-top: 1px solid var(--border);
+        padding: 0 4rem;
+        display: flex;
+        align-items: center;
+        margin-top: auto;
+      }
 
-    /* ── TOAST ── */
-    .toast {
-      position: fixed;
-      bottom: 1.5rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(6px);
-      background: var(--text);
-      color: var(--bg);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      padding: 0.45rem 1rem;
-      border-radius: 999px;
-      opacity: 0;
-      transition: all 0.2s;
-      pointer-events: none;
-    }
+      .footer-inner {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+      }
 
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      .footer-text {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.62rem;
+        color: var(--text-muted);
+      }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+      .footer-text a {
+        color: var(--text-dim);
+        text-decoration: none;
+      }
+      .footer-text a:hover {
+        color: var(--text);
+      }
 
-    .inner > * { animation: fadeUp 0.3s ease both; }
-    .inner > *:nth-child(1) { animation-delay: 0.03s; }
-    .inner > *:nth-child(2) { animation-delay: 0.08s; }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="header-inner">
-      <a href="/" class="logo">paste<span>bin</span></a>
-      <div class="header-actions">
-        <button class="btn-sm" onclick="copyContent()">copy</button>
-        <a class="btn-sm" id="raw-link" href="#" target="_blank">raw</a>
-        <a class="btn-sm" href="/">new paste</a>
-        <button class="theme-btn" id="theme-btn">☀</button>
+      /* toast */
+      .toast {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(6px);
+        background: var(--text);
+        color: var(--bg);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        padding: 0.45rem 1rem;
+        border-radius: 999px;
+        opacity: 0;
+        transition: all 0.2s;
+        pointer-events: none;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .inner > * {
+        animation: fadeUp 0.3s ease both;
+      }
+      .inner > *:nth-child(1) {
+        animation-delay: 0.03s;
+      }
+      .inner > *:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <a href="/" class="logo">paste<span>bin</span></a>
+        <div class="header-actions">
+          <button class="btn-sm" onclick="copyContent()">copy</button>
+          <a class="btn-sm" id="raw-link" href="#" target="_blank">raw</a>
+          <a class="btn-sm" href="/">new paste</a>
+          <button class="theme-btn" id="theme-btn">☀</button>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main>
-    <div class="inner" id="inner">
-      <!-- injected by JS -->
-    </div>
-  </main>
+    <main>
+      <div class="inner" id="inner"></div>
+    </main>
 
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-text">built in go · <a href="https://github.com/tarunbtw/pastebin" target="_blank">github</a></div>
-      <div class="footer-text" id="footer-meta"></div>
-    </div>
-  </footer>
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-text">
+          built in go ·
+          <a href="https://github.com/tarunbtw/pastebin" target="_blank"
+            >github</a
+          >
+        </div>
+        <div class="footer-text" id="footer-meta"></div>
+      </div>
+    </footer>
 
-  <div class="toast" id="toast">copied to clipboard</div>
+    <div class="toast" id="toast">copied</div>
 
-  <script>
-    // theme
-    const root = document.documentElement;
-    const themeBtn = document.getElementById('theme-btn');
-    const saved = localStorage.getItem('theme') || 'dark';
-    root.setAttribute('data-theme', saved);
-    themeBtn.textContent = saved === 'dark' ? '☀' : '☾';
+    <script>
+      // theme
+      const root = document.documentElement;
+      const themeBtn = document.getElementById("theme-btn");
+      const saved = localStorage.getItem("theme") || "dark";
+      root.setAttribute("data-theme", saved);
+      themeBtn.textContent = saved === "dark" ? "☀" : "☾";
+      themeBtn.addEventListener("click", () => {
+        const next =
+          root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        themeBtn.textContent = next === "dark" ? "☀" : "☾";
+      });
 
-    themeBtn.addEventListener('click', () => {
-      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      themeBtn.textContent = next === 'dark' ? '☀' : '☾';
-    });
+      const id = window.location.pathname.replace("/p/", "");
+      const inner = document.getElementById("inner");
+      document.getElementById("raw-link").href = "/raw/" + id;
+      let pasteContent = "";
 
-    const id = window.location.pathname.replace('/p/', '');
-    const inner = document.getElementById('inner');
-    document.getElementById('raw-link').href = '/raw/' + id;
-    let pasteContent = '';
+      function escapeHtml(s) {
+        return s
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
 
-    function escapeHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2000);
+      }
 
-    async function load() {
-      try {
-        const res = await fetch('/api/paste/' + id);
+      function copyContent() {
+        if (!pasteContent) return;
+        navigator.clipboard
+          .writeText(pasteContent)
+          .then(() => showToast("copied to clipboard"));
+      }
 
-        if (res.status === 404 || res.status === 410) {
-          inner.innerHTML = `
+      function copyUrl() {
+        navigator.clipboard
+          .writeText(window.location.href)
+          .then(() => showToast("link copied"));
+      }
+
+      async function load() {
+        try {
+          const res = await fetch("/api/paste/" + id);
+
+          if (res.status === 404 || res.status === 410) {
+            inner.innerHTML = `
             <div class="gone">
               <div class="gone-box">
                 <div class="gone-icon">⌫</div>
@@ -367,29 +496,42 @@
                 <a href="/" class="btn-new">new paste →</a>
               </div>
             </div>`;
-          return;
-        }
+            return;
+          }
 
-        const d = await res.json();
-        pasteContent = d.content;
-        document.title = 'paste · ' + id;
+          const d = await res.json();
+          pasteContent = d.content;
+          document.title = "paste · " + id;
 
-        const lines = d.content.split('\n');
-        const nums = Array.from({length: lines.length}, (_, i) => i + 1).join('\n');
+          const lines = d.content.split("\n");
+          const nums = Array.from(
+            { length: lines.length },
+            (_, i) => i + 1,
+          ).join("\n");
 
-        let expiryText = 'never expires';
-        if (d.expires_at) {
-          const exp = new Date(d.expires_at);
-          expiryText = 'expires ' + exp.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
-        }
+          let expiryText = "never expires";
+          if (d.expires_at) {
+            const exp = new Date(d.expires_at);
+            expiryText =
+              "expires " +
+              exp.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              });
+          }
 
-        const views = d.view_limit
-          ? `${d.view_count + 1} / ${d.view_limit} views`
-          : `${d.view_count + 1} views`;
+          const views = d.view_limit
+            ? `${d.view_count + 1} / ${d.view_limit} views`
+            : `${d.view_count + 1} views`;
 
-        const created = new Date(d.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+          const created = new Date(d.created_at).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          });
 
-        inner.innerHTML = `
+          inner.innerHTML = `
           <div class="meta">
             <div class="meta-left">
               <span class="lang-tag">${d.language}</span>
@@ -402,12 +544,17 @@
           </div>
           <div class="code-wrap">
             <div class="code-bar">
-              <div class="dots">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
+              <div class="code-bar-left">
+                <div class="dots">
+                  <div class="dot"></div>
+                  <div class="dot"></div>
+                  <div class="dot"></div>
+                </div>
+                <div class="paste-id">${id}</div>
               </div>
-              <div class="paste-id">${id}</div>
+              <div class="code-bar-right">
+                <button class="btn-copy-url" onclick="copyUrl()">copy link</button>
+              </div>
             </div>
             <div class="code-body">
               <div class="gutter">${nums}</div>
@@ -415,24 +562,14 @@
             </div>
           </div>`;
 
-        document.getElementById('footer-meta').textContent =
-          `${lines.length} lines · ${d.content.length.toLocaleString()} chars`;
-
-      } catch {
-        inner.innerHTML = `<div style="padding:2rem;font-family:monospace;font-size:0.8rem;color:var(--text-dim)">failed to load paste.</div>`;
+          document.getElementById("footer-meta").textContent =
+            `${lines.length} lines · ${d.content.length.toLocaleString()} chars`;
+        } catch {
+          inner.innerHTML = `<div style="padding:2rem;font-family:monospace;font-size:0.8rem;color:var(--text-dim)">failed to load paste.</div>`;
+        }
       }
-    }
 
-    function copyContent() {
-      if (!pasteContent) return;
-      navigator.clipboard.writeText(pasteContent).then(() => {
-        const t = document.getElementById('toast');
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2000);
-      });
-    }
-
-    load();
-  </script>
-</body>
+      load();
+    </script>
+  </body>
 </html>
