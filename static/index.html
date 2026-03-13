@@ -52,7 +52,7 @@
         border-bottom: 1px solid var(--border);
         display: flex;
         align-items: center;
-        padding: 0 4rem;
+        padding: 0 1.5rem;
       }
 
       .header-inner {
@@ -78,7 +78,7 @@
 
       main {
         flex: 1;
-        padding: 2.5rem 4rem;
+        padding: 1.5rem;
       }
 
       .inner {
@@ -138,7 +138,7 @@
 
       .editor-body {
         display: flex;
-        min-height: 400px;
+        min-height: 260px;
       }
 
       .gutter {
@@ -168,6 +168,7 @@
         resize: none;
         outline: none;
         tab-size: 2;
+        min-width: 0;
       }
 
       #content::placeholder {
@@ -176,9 +177,9 @@
 
       /* options */
       .options {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 0.75rem;
-        flex-wrap: wrap;
         position: relative;
         z-index: 50;
       }
@@ -187,9 +188,8 @@
         display: flex;
         flex-direction: column;
         gap: 0.35rem;
-        flex: 1;
-        min-width: 150px;
         position: relative;
+        min-width: 0;
       }
 
       .field label {
@@ -247,7 +247,7 @@
         border: 1px solid var(--border-focus);
         border-radius: 6px;
         z-index: 9999;
-        max-height: 220px;
+        max-height: 200px;
         overflow-y: auto;
         display: none;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
@@ -326,6 +326,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 1rem;
         z-index: 1;
       }
 
@@ -335,8 +336,6 @@
         color: var(--text-muted);
         display: flex;
         gap: 1.2rem;
-        position: relative;
-        z-index: 1;
       }
 
       .btn-create {
@@ -351,6 +350,7 @@
         cursor: pointer;
         letter-spacing: 0.3px;
         transition: all 0.15s;
+        white-space: nowrap;
       }
 
       .btn-create:hover {
@@ -369,7 +369,7 @@
       footer {
         height: 48px;
         border-top: 1px solid var(--border);
-        padding: 0 4rem;
+        padding: 0 1.5rem;
         display: flex;
         align-items: center;
       }
@@ -423,6 +423,54 @@
       .inner > *:nth-child(4) {
         animation-delay: 0.15s;
       }
+
+      /* ── MOBILE ── */
+      @media (max-width: 600px) {
+        header {
+          padding: 0 1rem;
+        }
+        main {
+          padding: 1rem;
+        }
+        footer {
+          padding: 0 1rem;
+          height: auto;
+          min-height: 48px;
+        }
+
+        .editor-body {
+          min-height: 200px;
+        }
+
+        .options {
+          grid-template-columns: 1fr 1fr;
+          gap: 0.6rem;
+        }
+
+        .submit-row {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.75rem;
+        }
+        .btn-create {
+          width: 100%;
+          text-align: center;
+          padding: 0.75rem;
+        }
+        .stats {
+          justify-content: center;
+        }
+
+        .footer-inner {
+          flex-direction: column;
+          gap: 0.25rem;
+          padding: 0.5rem 0;
+          text-align: center;
+        }
+        .footer-text:last-child {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -457,7 +505,6 @@
         </div>
 
         <div class="options">
-          <!-- language -->
           <div class="field">
             <label>Language</label>
             <div class="custom-select" id="sel-language">
@@ -503,7 +550,6 @@
             </div>
           </div>
 
-          <!-- expiry -->
           <div class="field">
             <label>Expiry</label>
             <div class="custom-select" id="sel-expiry">
@@ -521,7 +567,6 @@
             </div>
           </div>
 
-          <!-- view limit -->
           <div class="field">
             <label>View Limit</label>
             <input
@@ -532,7 +577,6 @@
             />
           </div>
 
-          <!-- password -->
           <div class="field">
             <label>Password</label>
             <input type="password" id="password" placeholder="optional" />
@@ -577,14 +621,12 @@
         const dd = document.getElementById(`dd-${name}`);
         const trigger = document.querySelector(`#sel-${name} .select-trigger`);
         const isOpen = dd.classList.contains("open");
-
         document
           .querySelectorAll(".select-dropdown")
           .forEach((d) => d.classList.remove("open"));
         document
           .querySelectorAll(".select-trigger")
           .forEach((t) => t.classList.remove("open"));
-
         if (!isOpen) {
           dd.classList.add("open");
           trigger.classList.add("open");
@@ -641,7 +683,6 @@
       content.addEventListener("scroll", () => {
         gutter.scrollTop = content.scrollTop;
       });
-
       content.addEventListener("keydown", (e) => {
         if (e.key === "Tab") {
           e.preventDefault();
